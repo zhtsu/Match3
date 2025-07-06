@@ -1,0 +1,16 @@
+{
+    "Id": "test",
+    "Name": "test_mod_name",
+    "Description": "test_mod_description",
+    "Author": "zhtsu",
+    "Email": "zhtsu@qq.com",
+    "TileList": [
+        "Test/tiles/example.fbtile"
+    ],
+    "UnitList": [
+        
+    ],
+    "LocaleList": [
+        "Test/locale.fblang"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "Id": "example",
+    "Name": "tile_example_name",
+    "Description": "tile_example_description",
+    "Width": 128,
+    "Height": 128,
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Test/tiles/textures/green.png"
+            ]
+        }
+    }
+}
