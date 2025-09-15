@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class M3_LifeCycleController : MonoBehaviour
+public class M3_GameInstance : MonoBehaviour
 {
     [SerializeField]
     private GameObject _UIRootPrefab;
@@ -22,6 +22,8 @@ public class M3_LifeCycleController : MonoBehaviour
         M3_EventManager.Subscribe<M3_Event_PrefabsLoadCompleted>(TestAnythingHere);
 
         M3_ManagerHub.Instance.Initialize();
+
+        M3_ManagerHub.Instance.UIManager.OpenUI(M3_UIType.MainMenu);
     }
 
     private void OnDestroy()

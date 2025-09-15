@@ -19,4 +19,16 @@ public class M3_UIManager : M3_IManager
     {
 
     }
+
+    public void OpenUI(M3_UIType TargetUIType, M3_UILayerType Layer = M3_UILayerType.Main)
+    {
+        if (_UIRoot != null)
+        {
+            _UIRoot.OpenUI(TargetUIType, Layer);
+        }
+        else
+        {
+            throw new Exception("UIRoot is not found in the scene.");
+        }
+    }
 }
