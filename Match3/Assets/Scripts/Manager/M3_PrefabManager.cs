@@ -9,9 +9,9 @@ public enum FB_PrefabType
     SquareTile = 0,
 }
 
-public class M3_PrefabManager : M3_IManager
+public class M3_PrefabManager : M3_Manager
 {
-    public string ManagerName
+    public override string ManagerName
     {
         get { return "PrefabManager"; }
     }
@@ -23,7 +23,7 @@ public class M3_PrefabManager : M3_IManager
 
     private static List<AsyncOperationHandle<GameObject>> _PrefabHandleList = new List<AsyncOperationHandle<GameObject>>();
 
-    public void Initialize()
+    public override void Initialize()
     {
         foreach (string Address in _PrefabAddressList)
         {
@@ -31,7 +31,7 @@ public class M3_PrefabManager : M3_IManager
         }
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
         foreach (AsyncOperationHandle<GameObject> Handle in _PrefabHandleList)
         {

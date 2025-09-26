@@ -70,14 +70,14 @@ public class M3_ManagerHub
     }
 
     private void InitManager<T>(T Manager)
-        where T : class, M3_IManager, new()
+        where T : M3_Manager, new()
     {
         Manager.Initialize();
         Debug.Log(Manager.ManagerName + " initialized!");
     }
 
     private void DestroyManager<T>(T Manager)
-        where T : class, M3_IManager
+        where T : M3_Manager, new()
     {
         Manager.Destroy();
         Debug.Log(Manager.ManagerName + " destroyed!");

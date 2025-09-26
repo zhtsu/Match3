@@ -2,16 +2,16 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class M3_ModManager : M3_IManager
+public class M3_ModManager : M3_Manager
 {
-    public string ManagerName
+    public override string ManagerName
     {
         get { return "ModManager"; }
     }
 
     private List<M3_ModData> _ModDataList = new List<M3_ModData>();
 
-    public void Initialize()
+    public override void Initialize()
     {
         foreach (string ModDir in Directory.GetDirectories(M3_PathManager.ModsPath))
         {
@@ -57,7 +57,7 @@ public class M3_ModManager : M3_IManager
         }
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
 
     }

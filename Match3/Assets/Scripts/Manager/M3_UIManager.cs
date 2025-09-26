@@ -1,21 +1,21 @@
 using System;
 using UnityEngine;
 
-public class M3_UIManager : M3_IManager
+public class M3_UIManager : M3_Manager
 {
-    public string ManagerName
+    public override string ManagerName
     {
         get { return "UIManager"; }
     }
 
     private M3_UIRoot _UIRoot;
 
-    public void Initialize()
+    public override void Initialize()
     {
         _UIRoot = GameObject.FindObjectOfType<M3_UIRoot>();
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
 
     }
@@ -29,6 +29,30 @@ public class M3_UIManager : M3_IManager
         else
         {
             throw new Exception("UIRoot is not found in the scene.");
+        }
+    }
+
+    public void CloseUI(M3_UIType TargetUIType)
+    {
+        if (_UIRoot != null)
+        {
+            _UIRoot.CloseUI(TargetUIType);
+        }
+        else
+        {
+            throw new Exception("UIRoot is not found in the scene.");
+        }
+    }
+
+    public bool IsUIActive(M3_UIType TargetUIType)
+    {
+        if (_UIRoot != null)
+        {
+            return _UIRoot.IsUIActive(TargetUIType);
+        }
+        else
+        {
+            return false;
         }
     }
 }

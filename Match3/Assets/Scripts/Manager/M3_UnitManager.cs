@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class M3_UnitManager : M3_IManager
+public class M3_UnitManager : M3_Manager
 {
-    public string ManagerName
+    public override string ManagerName
     {
         get { return "UnitManager"; }
     }
 
     private List<M3_UnitData> _UnitDataList = new List<M3_UnitData>();
 
-    public void Initialize()
+    public override void Initialize()
     {
         M3_EventManager.Subscribe<M3_Event_ReadUnitFile>(LoadUnitData);
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
         M3_EventManager.Unsubscribe<M3_Event_ReadUnitFile>(LoadUnitData);
     }

@@ -4,9 +4,9 @@ using System.IO;
 using UnityEngine;
 using XLua;
 
-public class M3_LocaleManager : M3_IManager
+public class M3_LocaleManager : M3_Manager
 {
-    public string ManagerName
+    public override string ManagerName
     {
         get { return "LocaleManager"; }
     }
@@ -14,12 +14,12 @@ public class M3_LocaleManager : M3_IManager
     static private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _LocaleStringDict
         = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
 
-    public void Initialize()
+    public override void Initialize()
     {
         M3_EventManager.Subscribe<M3_Event_ReadLocaleFile>(LoadLocaleData);
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
         M3_EventManager.Unsubscribe<M3_Event_ReadLocaleFile>(LoadLocaleData);
         _LocaleStringDict.Clear();

@@ -28,6 +28,7 @@ public class M3_UIRoot : MonoBehaviour
     private List<GameObject> _UIPrefabList;
 
     private Dictionary<M3_UIType, GameObject> _UIPrefabDict = new Dictionary<M3_UIType, GameObject>();
+    private List<GameObject> _ActiveUIList = new List<GameObject>();
 
     private void Awake()
     {
@@ -70,19 +71,51 @@ public class M3_UIRoot : MonoBehaviour
             {
                 case M3_UILayerType.Bottom:
                     TargetUI.transform.SetParent(_BottomLayer.transform, false);
+                    _ActiveUIList.Add(TargetUI);
                     break;
                 case M3_UILayerType.Main:
                     TargetUI.transform.SetParent(_MainLayer.transform, false);
+                    _ActiveUIList.Add(TargetUI);
                     break;
                 case M3_UILayerType.Top:
                     TargetUI.transform.SetParent(_TopLayer.transform, false);
+                    _ActiveUIList.Add(TargetUI);
                     break;
                 case M3_UILayerType.Popup:
                     TargetUI.transform.SetParent(_PopupLayer.transform, false);
+                    _ActiveUIList.Add(TargetUI);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("Layer", Layer, null);
             }
         }
+    }
+
+    public void CloseUI(M3_UIType TargetUIType)
+    {
+        foreach (GameObject Obj in _ActiveUIList)
+        {
+            M3_UI UIComponent = Obj.GetComponent<M3_UI>();
+            if (UIComponent != null && UIComponent.Type == TargetUIType)
+            {
+                _ActiveUIList.Remove(Obj);
+                Destroy(Obj);
+                break;
+            }
+        }
+    }
+
+    public bool IsUIActive(M3_UIType CheckedUIType)
+    {
+        foreach (GameObject Obj in _ActiveUIList)
+        {
+            M3_UI UIComponent = Obj.GetComponent<M3_UI>();
+            if (UIComponent != null && UIComponent.Type == CheckedUIType)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

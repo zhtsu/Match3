@@ -14,6 +14,11 @@ public enum M3_UIType
 
 public class M3_UI : MonoBehaviour
 {
+    [SerializeField]
+    private M3_UIType _Type;
+
+    public M3_UIType Type { get { return _Type; } }
+
     private void Start()
     {
 

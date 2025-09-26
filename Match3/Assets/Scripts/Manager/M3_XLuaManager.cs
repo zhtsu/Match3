@@ -2,21 +2,21 @@ using UnityEngine;
 using System.Collections.Generic;
 using XLua;
 
-public class M3_XLuaManager : M3_IManager
+public class M3_XLuaManager : M3_Manager
 {
-    public string ManagerName
+    public override string ManagerName
     {
         get { return "XLuaManager"; }
     }
 
     private XLua.LuaEnv _LuaEnv { get; set; }
 
-    public void Initialize()
+    public override void Initialize()
     {
         _LuaEnv = new XLua.LuaEnv();
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
         _LuaEnv.Dispose();
     }

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using static Unity.Collections.AllocatorManager;
 
-public class M3_EventManager : M3_IManager
+public class M3_EventManager : M3_Manager
 {
-    public string ManagerName
+    public override string ManagerName
     {
         get { return "EventManager"; }
     }
@@ -13,12 +13,12 @@ public class M3_EventManager : M3_IManager
 
     private static Dictionary<Type, Delegate> _EventHandlers = new Dictionary<Type, Delegate>();
 
-    public void Initialize()
+    public override void Initialize()
     {
 
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
 
     }

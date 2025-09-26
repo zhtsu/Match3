@@ -7,8 +7,8 @@ public class M3_GameInstance : MonoBehaviour
     [SerializeField]
     private GameObject _UIRootPrefab;
 
-    [SerializeField]
-    private GameObject _TestGrid;
+    private bool _IsPrefabsLoadCompleted = false;
+    public bool IsPrefabsLoadCompleted { get { return _IsPrefabsLoadCompleted; } }
 
     private void Start()
     {
@@ -19,11 +19,11 @@ public class M3_GameInstance : MonoBehaviour
             Instantiate(_UIRootPrefab);
         }
 
-        M3_EventManager.Subscribe<M3_Event_PrefabsLoadCompleted>(TestAnythingHere);
+        M3_EventManager.Subscribe<M3_Event_PrefabsLoadCompleted>(OnPrefabsLoadCompleted);
 
         M3_ManagerHub.Instance.Initialize();
 
-        M3_ManagerHub.Instance.UIManager.OpenUI(M3_UIType.MainMenu);
+        // M3_ManagerHub.Instance.UIManager.OpenUI(M3_UIType.MainMenu);
     }
 
     private void OnDestroy()
@@ -31,14 +31,9 @@ public class M3_GameInstance : MonoBehaviour
         M3_ManagerHub.Instance.Destroy();
     }
 
-    private void TestAnythingHere(M3_Event_PrefabsLoadCompleted Event)
+    private void OnPrefabsLoadCompleted(M3_Event_PrefabsLoadCompleted Event)
     {
-        if (_TestGrid)
-        {
-            M3_Grid Grid = _TestGrid.GetComponent<M3_Grid>();
-
-            Grid.Initialize(10, 10, 2.0f);
-            Grid.GenetateTerrain();
-        }
+        _IsPrefabsLoadCompleted = true;
+        M3_EventManager.Unsubscribe<M3_Event_PrefabsLoadCompleted>(OnPrefabsLoadCompleted);
     }
 }

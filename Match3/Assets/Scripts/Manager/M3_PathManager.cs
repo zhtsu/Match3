@@ -1,16 +1,16 @@
 using System.IO;
 using UnityEngine;
 
-public class M3_PathManager : M3_IManager
+public class M3_PathManager : M3_Manager
 {
-    public string ManagerName
+    public override string ManagerName
     {
         get { return "PathManager"; }
     }
 
     public static string ModsPath { get; private set; }
 
-    public void Initialize()
+    public override void Initialize()
     {
         ModsPath = NormalizePath(Path.Combine(Application.dataPath, "Mods"));
         if (!Directory.Exists(ModsPath))
@@ -19,7 +19,7 @@ public class M3_PathManager : M3_IManager
         }
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
 
     }

@@ -1,18 +1,18 @@
 using System;
 
-public class M3_DataManager : M3_IManager
+public class M3_DataManager : M3_Manager
 {
-    public string ManagerName
+    public override string ManagerName
     {
         get { return "DataManager"; }
     }
 
-    public void Initialize()
+    public override void Initialize()
     {
 
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
 
     }
