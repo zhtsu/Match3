@@ -370,6 +370,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc800e7a3679e8f4ea0cf43ef538f1d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _GridCellContainerPrefab: {fileID: 1331197809555005521, guid: d4a42d0a1a8c64b4c802c17835c874a2, type: 3}
 --- !u!4 &1129590621
 Transform:
   m_ObjectHideFlags: 0
@@ -415,7 +416,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _UIRootPrefab: {fileID: 5029403008816122358, guid: b971a58d3808ffe479c7881631251b2d, type: 3}
-  _TestGrid: {fileID: 1129590619}
 --- !u!4 &1131228402
 Transform:
   m_ObjectHideFlags: 0
