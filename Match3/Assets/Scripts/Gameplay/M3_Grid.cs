@@ -9,9 +9,14 @@ public class M3_Grid : MonoBehaviour
     private GameObject _GridCellContainerPrefab;
 
     private int _Row = 0;
+    public int Row { get { return _Row; } }
+
     private int _Column = 0;
+    public int Column { get { return _Column; } }
+
     private float _TileSize = 0;
-    
+    public float TileSize { get { return _TileSize; } }
+
     private M3_GridCellContainer[,] _GridArray;
 
     public void Initialize(int Row, int Column, float TileSize)
@@ -22,7 +27,7 @@ public class M3_Grid : MonoBehaviour
         _GridArray = new M3_GridCellContainer[_Row, _Column];
     }
 
-    public void AddCell(M3_IGridCell GridCell, int X, int Y)
+    public void AddCell(M3_IGridCell GridCell, int X, int Y, M3_FillMode FillMode = M3_FillMode.None)
     {
         if (X < _Row && Y < _Column)
         {
@@ -31,7 +36,7 @@ public class M3_Grid : MonoBehaviour
 
             M3_GridCellContainer GridContainer = _GridArray[X, Y];
             if (GridContainer != null)
-                GridContainer.AddCell(GridCell);
+                GridContainer.AddCell(GridCell, FillMode);
         }
     }
 
