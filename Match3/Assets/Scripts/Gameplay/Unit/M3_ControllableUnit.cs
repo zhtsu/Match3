@@ -1,4 +1,8 @@
-public class M3_AIController : M3_Controller
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class M3_ControllableUnit
 {
     // Start is called before the first frame update
     void Start()

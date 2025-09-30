@@ -2,12 +2,8 @@ using UnityEngine;
 
 public class M3_ManagerHub
 {
-    public M3_TileManager TileManager { get; private set; }
-    public M3_UnitManager UnitManager { get; private set; }
     public M3_XLuaManager XLuaManager { get; private set; }
-    public M3_ModManager ModManager { get; private set; }
-    public M3_LocaleManager LocaleManager { get; private set; }
-    public M3_PathManager PathManager { get; private set; }
+    public M3_DataManager DataManager { get; private set; }
     public M3_PrefabManager PrefabManager { get; private set; }
     public M3_UIManager UIManager { get; private set; }
 
@@ -28,40 +24,28 @@ public class M3_ManagerHub
 
     public void Initialize()
     {
-        TileManager = new M3_TileManager();
-        UnitManager = new M3_UnitManager();
         XLuaManager = new M3_XLuaManager();
-        ModManager = new M3_ModManager();
-        LocaleManager = new M3_LocaleManager();
-        PathManager = new M3_PathManager();
+        DataManager = new M3_DataManager();
         PrefabManager = new M3_PrefabManager();
         UIManager = new M3_UIManager();
 
         // First initialize
         InitManager<M3_UIManager>(UIManager);
         InitManager<M3_PrefabManager>(PrefabManager);
-        InitManager<M3_PathManager>(PathManager);
         InitManager<M3_XLuaManager>(XLuaManager);
 
         // Second initialize
-        InitManager<M3_LocaleManager>(LocaleManager);
-        InitManager<M3_TileManager>(TileManager);
-        InitManager<M3_UnitManager>(UnitManager);
+        InitManager<M3_DataManager>(DataManager);
 
         // Third initialize
-        InitManager<M3_ModManager>(ModManager);
     }
 
     public void Destroy()
     {
         // First destroy
-        DestroyManager<M3_LocaleManager>(LocaleManager);
-        DestroyManager<M3_TileManager>(TileManager);
-        DestroyManager<M3_UnitManager>(UnitManager);
+        DestroyManager<M3_DataManager>(DataManager);
 
         // Second destroy
-        DestroyManager<M3_ModManager>(ModManager);
-        DestroyManager<M3_PathManager>(PathManager);
         DestroyManager<M3_XLuaManager>(XLuaManager);
 
         // Third destroy
