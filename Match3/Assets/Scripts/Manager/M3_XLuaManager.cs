@@ -6,7 +6,7 @@ public class M3_XLuaManager : M3_Manager
 {
     public override string ManagerName
     {
-        get { return "XLuaManager"; }
+        get { return "XLua Manager"; }
     }
 
     private XLua.LuaEnv _LuaEnv { get; set; }

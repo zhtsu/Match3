@@ -6,7 +6,7 @@ public class M3_EventManager : M3_Manager
 {
     public override string ManagerName
     {
-        get { return "EventManager"; }
+        get { return "Event Manager"; }
     }
 
     public delegate void EventHandler<T>(T Event);

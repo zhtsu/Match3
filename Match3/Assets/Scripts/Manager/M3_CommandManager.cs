@@ -4,7 +4,7 @@ public class M3_CommandManager : M3_Manager
 {
     public override string ManagerName
     {
-        get { return "CommandManager"; }
+        get { return "Command Manager"; }
     }
 
     public override void Initialize()

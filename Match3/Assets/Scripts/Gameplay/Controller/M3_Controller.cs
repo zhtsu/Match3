@@ -1,14 +1,5 @@
-public class M3_Controller
+public abstract class M3_Controller
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public abstract string ControllerName { get; }
+    public abstract void Upadte(float DeltaTime);
 }

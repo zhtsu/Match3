@@ -5,7 +5,7 @@ public class M3_UIManager : M3_Manager
 {
     public override string ManagerName
     {
-        get { return "UIManager"; }
+        get { return "UI Manager"; }
     }
 
     private M3_UIRoot _UIRoot;

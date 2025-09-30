@@ -8,7 +8,7 @@ public class M3_DataManager : M3_Manager
 {
     public override string ManagerName
     {
-        get { return "DataManager"; }
+        get { return "Data Manager"; }
     }
 
     private List<M3_ModData> _ModDataList = new List<M3_ModData>();
@@ -39,15 +39,24 @@ public class M3_DataManager : M3_Manager
     // Unit Data
     //
 
-    private M3_UnitData GetUnitData(string ModId, string TileId)
+    private bool GetUnitData(string ModId, string TileId, out M3_UnitData OutUnitData)
     {
-        return _UnitDataList.Find(
-            UnitData => UnitData.BelongingModId == ModId && UnitData.Id == TileId);
+        foreach (M3_UnitData UnitData in _UnitDataList)
+        {
+            if (UnitData.BelongingModId == ModId && UnitData.Id == TileId)
+            {
+                OutUnitData = UnitData;
+                return true;
+            }
+        }
+
+        OutUnitData = default;
+        return false;
     }
 
     private bool HasUnitData(string ModId, string TileId)
     {
-        return GetUnitData(ModId, TileId) != null;
+        return GetUnitData(ModId, TileId, out M3_UnitData TempUnitData);
     }
 
     private void LoadUnitData(M3_Event_ReadUnitFile Event)
@@ -62,7 +71,7 @@ public class M3_DataManager : M3_Manager
         {
             string UnitFileContent = File.ReadAllText(Event.UnitFilePath, System.Text.Encoding.UTF8);
 
-            if (M3_Data.Deserialize<M3_UnitData>(UnitFileContent, out M3_UnitData UnitData))
+            if (M3_DataHelper.Deserialize<M3_UnitData>(UnitFileContent, out M3_UnitData UnitData))
             {
                 if (HasUnitData(UnitData.BelongingModId, UnitData.Id))
                 {
@@ -70,7 +79,7 @@ public class M3_DataManager : M3_Manager
                     return;
                 }
 
-                UnitData.Initialize(Event.BelongingModId);
+                UnitData.BelongingModId = Event.BelongingModId;
 
                 _UnitDataList.Add(UnitData);
             }
@@ -90,15 +99,24 @@ public class M3_DataManager : M3_Manager
         return _TileDataList.FindAll(TileData => TileData.BelongingModId == ModId).ToArray();
     }
 
-    private M3_TileData GetTileData(string ModId, string TileId)
+    private bool GetTileData(string ModId, string TileId, out M3_TileData OutTileData)
     {
-        return _TileDataList.Find(
-            TileData => TileData.BelongingModId == ModId && TileData.Id == TileId);
+        foreach (M3_TileData TileData in _TileDataList)
+        {
+            if (TileData.BelongingModId == ModId && TileData.Id == TileId)
+            {
+                OutTileData = TileData;
+                return true;
+            }
+        }
+
+        OutTileData = default;
+        return false;
     }
 
     private bool HasTileData(string ModId, string TileId)
     {
-        return GetTileData(ModId, TileId) != null;
+        return GetTileData(ModId, TileId, out M3_TileData TempTileData);
     }
 
     private void LoadTileData(M3_Event_ReadTileFile Event)
@@ -113,7 +131,7 @@ public class M3_DataManager : M3_Manager
         {
             string TileFileContent = File.ReadAllText(Event.TileFilePath, System.Text.Encoding.UTF8);
 
-            if (M3_Data.Deserialize<M3_TileData>(TileFileContent, out M3_TileData TileData))
+            if (M3_DataHelper.Deserialize<M3_TileData>(TileFileContent, out M3_TileData TileData))
             {
                 if (HasTileData(TileData.BelongingModId, TileData.Id))
                 {
@@ -121,7 +139,7 @@ public class M3_DataManager : M3_Manager
                     return;
                 }
 
-                TileData.Initialize(Event.BelongingModId);
+                TileData.BelongingModId = Event.BelongingModId;
 
                 _TileDataList.Add(TileData);
             }
@@ -151,7 +169,7 @@ public class M3_DataManager : M3_Manager
             {
                 string ModFileContent = File.ReadAllText(ModFilePath, System.Text.Encoding.UTF8);
 
-                if (M3_Data.Deserialize<M3_ModData>(ModFileContent, out M3_ModData ModData))
+                if (M3_DataHelper.Deserialize<M3_ModData>(ModFileContent, out M3_ModData ModData))
                 {
                     _ModDataList.Add(ModData);
                 }
@@ -187,17 +205,19 @@ public class M3_DataManager : M3_Manager
         return _ModDataList;
     }
 
-    M3_ModData GetModData(string ModId)
+    bool GetModData(string ModId, out M3_ModData OutModData)
     {
         foreach (M3_ModData ModData in _ModDataList)
         {
             if (ModData.Id == ModId)
             {
-                return ModData;
+                OutModData = ModData;
+                return true;
             }
         }
 
-        return null;
+        OutModData = default;
+        return false;
     }
 
     //

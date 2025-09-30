@@ -1,14 +1,9 @@
 public class M3_AIController : M3_Controller
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public override string ControllerName { get { return "AI Controller"; } }
 
-    // Update is called once per frame
-    void Update()
+    public override void Upadte(float DeltaTime)
     {
-        
+
     }
 }

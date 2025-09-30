@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class M3_ControllableUnit
+public class M3_Unit : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -13,6 +13,6 @@ public class M3_ControllableUnit
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

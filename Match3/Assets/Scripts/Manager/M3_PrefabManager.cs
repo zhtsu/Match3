@@ -13,7 +13,7 @@ public class M3_PrefabManager : M3_Manager
 {
     public override string ManagerName
     {
-        get { return "PrefabManager"; }
+        get { return "Prefab Manager"; }
     }
 
     private string[] _PrefabAddressList = {

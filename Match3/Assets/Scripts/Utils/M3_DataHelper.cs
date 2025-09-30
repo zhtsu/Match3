@@ -1,7 +1,8 @@
 using LitJson;
+using System.IO;
 using UnityEngine;
 
-public class M3_Data
+public class M3_DataHelper
 {
     public static string Serialize<T>(T InData)
     {
@@ -10,7 +11,7 @@ public class M3_Data
         Writer.IndentValue = 4;
 
         JsonMapper.ToJson(InData, Writer);
-        
+
         return Writer.ToString();
     }
 
