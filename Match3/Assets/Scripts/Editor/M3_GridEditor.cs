@@ -39,7 +39,7 @@ public class M3_GridEditor : Editor
             _Target.Initialize(_Row, _Column, _TileSize);
             _Target.GenerateGrid();
             _Target.AddCell(
-                (M3_SquareTile)Instantiate(_TestTile).GetComponent<M3_IGridCell>(), 0, 0, _FillMode);
+                (M3_Gem)Instantiate(_TestTile).GetComponent<M3_IGridCell>(), 0, 0, _FillMode);
         }
 
         if (GUILayout.Button("Clear Grid"))

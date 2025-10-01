@@ -98,8 +98,6 @@ public class M3_GridCellContainer : MonoBehaviour
                 }
         }
 
-        Debug.Log($"OutputScaleX: {OutputScaleX}, OutputScaleY: {OutputScaleY}");
-
         return new Vector3(OutputScaleX, OutputScaleY, 1);
     }
 }

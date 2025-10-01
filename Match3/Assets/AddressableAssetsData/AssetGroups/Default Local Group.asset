@@ -17,8 +17,8 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 665b8a747f415384bb60bfc904d538b0
   m_SerializeEntries:
-  - m_GUID: 7ed20e97e7a0da64d85a551239f2c01e
-    m_Address: Assets/Prefabs/SquareTile.prefab
+  - m_GUID: e493bc1981d43214d9508ba29e7bd598
+    m_Address: Assets/Prefabs/Gem.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

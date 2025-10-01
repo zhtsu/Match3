@@ -10,13 +10,16 @@ public enum M3_GameState
     Paused,
 }
 
-public class M3_GameInstance : MonoBehaviour
+public class M3_GameController : MonoBehaviour
 {
-    private static M3_GameInstance _Instance;
-    public static M3_GameInstance Instance { get { return _Instance; } }
+    private static M3_GameController _Instance;
+    public static M3_GameController Instance { get { return _Instance; } }
 
     [SerializeField]
-    private GameObject _UIRootPrefab;
+    private M3_GameConfig _GameConfig;
+    public M3_GameConfig GameConfig { get { return _GameConfig; } }
+
+    public M3_GlobalData GlobalData;
 
     private bool _IsPrefabsLoadCompleted = false;
     public bool IsPrefabsLoadCompleted { get { return _IsPrefabsLoadCompleted; } }
@@ -39,9 +42,9 @@ public class M3_GameInstance : MonoBehaviour
     {
         DontDestroyOnLoad(this);
 
-        if (_UIRootPrefab)
+        if (M3_GameController.Instance.GameConfig.UIRootPrefab)
         {
-            Instantiate(_UIRootPrefab);
+            Instantiate(M3_GameController.Instance.GameConfig.UIRootPrefab);
         }
 
         M3_EventManager.Subscribe<M3_Event_PrefabsLoadCompleted>(OnPrefabsLoadCompleted);
@@ -49,6 +52,10 @@ public class M3_GameInstance : MonoBehaviour
         M3_ManagerHub.Instance.Initialize();
 
         // M3_ManagerHub.Instance.UIManager.OpenUI(M3_UIType.MainMenu);
+    }
+
+    private void Update()
+    {
     }
 
     private void OnDestroy()
