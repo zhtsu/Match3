@@ -5,6 +5,7 @@ using UnityEngine;
 public class M3_Tile : MonoBehaviour, M3_IGridCell
 {
     public Vector2Int CellCoords { get; set; }
+    public M3_Grid ParentGrid { get; set; }
 
     public void UnitEntered(M3_Unit Unit)
     {

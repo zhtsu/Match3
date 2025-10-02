@@ -32,7 +32,10 @@ public class M3_Grid : MonoBehaviour
         if (X < _Row && Y < _Column)
         {
             if (GridCell != null)
+            {
                 GridCell.CellCoords = new Vector2Int(X, Y);
+                GridCell.ParentGrid = this;
+            }
 
             M3_GridCellContainer GridContainer = _GridArray[X, Y];
             if (GridContainer != null)

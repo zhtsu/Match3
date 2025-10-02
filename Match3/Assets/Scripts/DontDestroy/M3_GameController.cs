@@ -12,20 +12,15 @@ public enum M3_GameState
 
 public class M3_GameController : MonoBehaviour
 {
-    private static M3_GameController _Instance;
-    public static M3_GameController Instance { get { return _Instance; } }
-
     [SerializeField]
     private M3_GameConfig _GameConfig;
+
+    private static M3_GameController _Instance;
+    private M3_GlobalData _GlobalData;
+
+    public static M3_GameController Instance { get { return _Instance; } }
     public M3_GameConfig GameConfig { get { return _GameConfig; } }
-
-    public M3_GlobalData GlobalData;
-
-    private bool _IsPrefabsLoadCompleted = false;
-    public bool IsPrefabsLoadCompleted { get { return _IsPrefabsLoadCompleted; } }
-
-    private M3_GameState _CurrentGameState = M3_GameState.None;
-    public M3_GameState CurrentGameState { get { return _CurrentGameState; } }
+    public M3_GlobalData GlobalData { get { return _GlobalData; } }
 
     private void Awake()
     {
@@ -47,15 +42,19 @@ public class M3_GameController : MonoBehaviour
             Instantiate(M3_GameController.Instance.GameConfig.UIRootPrefab);
         }
 
-        M3_EventManager.Subscribe<M3_Event_PrefabsLoadCompleted>(OnPrefabsLoadCompleted);
-
         M3_ManagerHub.Instance.Initialize();
+
+        M3_ManagerHub.Instance.EventManager.Subscribe<M3_Event_PrefabsLoadCompleted>(OnPrefabsLoadCompleted);
 
         // M3_ManagerHub.Instance.UIManager.OpenUI(M3_UIType.MainMenu);
     }
 
     private void Update()
     {
+        if (M3_ManagerHub.Instance.CommandManager != null)
+        {
+            M3_ManagerHub.Instance.CommandManager.Update();
+        }
     }
 
     private void OnDestroy()
@@ -63,9 +62,14 @@ public class M3_GameController : MonoBehaviour
         M3_ManagerHub.Instance.Destroy();
     }
 
+    void SetMouseDragDirection(M3_MouseMoveDirection Direction)
+    {
+        _GlobalData.MouseDragDirection = Direction;
+    }
+
     private void OnPrefabsLoadCompleted(M3_Event_PrefabsLoadCompleted Event)
     {
-        _IsPrefabsLoadCompleted = true;
-        M3_EventManager.Unsubscribe<M3_Event_PrefabsLoadCompleted>(OnPrefabsLoadCompleted);
+        _GlobalData.IsPrefabsLoadCompleted = true;
+        M3_ManagerHub.Instance.EventManager.Unsubscribe<M3_Event_PrefabsLoadCompleted>(OnPrefabsLoadCompleted);
     }
 }

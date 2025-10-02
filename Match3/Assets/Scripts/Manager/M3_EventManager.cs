@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using static Unity.Collections.AllocatorManager;
 
 public class M3_EventManager : M3_Manager
 {
@@ -11,7 +10,7 @@ public class M3_EventManager : M3_Manager
 
     public delegate void EventHandler<T>(T Event);
 
-    private static Dictionary<Type, Delegate> _EventHandlers = new Dictionary<Type, Delegate>();
+    private Dictionary<Type, Delegate> _EventHandlers = new Dictionary<Type, Delegate>();
 
     public override void Initialize()
     {
@@ -23,7 +22,7 @@ public class M3_EventManager : M3_Manager
 
     }
 
-    public static void SendEvent<T>(T Event = default)
+    public void SendEvent<T>(T Event = default)
         where T : M3_Event
     {
         Type EventType = typeof(T);
@@ -34,7 +33,7 @@ public class M3_EventManager : M3_Manager
         }
     }
 
-    public static void Subscribe<T>(EventHandler<T> Handler)
+    public void Subscribe<T>(EventHandler<T> Handler)
     {
         Type EventType = typeof(T);
 
@@ -48,7 +47,7 @@ public class M3_EventManager : M3_Manager
         }
     }
 
-    public static void Unsubscribe<T>(EventHandler<T> Handler)
+    public void Unsubscribe<T>(EventHandler<T> Handler)
     {
         Type EventType = typeof(T);
 

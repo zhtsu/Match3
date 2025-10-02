@@ -19,18 +19,18 @@ public class M3_DataManager : M3_Manager
 
     public override void Initialize()
     {
-        M3_EventManager.Subscribe<M3_Event_ReadTileFile>(LoadTileData);
-        M3_EventManager.Subscribe<M3_Event_ReadUnitFile>(LoadUnitData);
-        M3_EventManager.Subscribe<M3_Event_ReadLocaleFile>(LoadLocaleData);
+        M3_ManagerHub.Instance.EventManager.Subscribe<M3_Event_ReadTileFile>(LoadTileData);
+        M3_ManagerHub.Instance.EventManager.Subscribe<M3_Event_ReadUnitFile>(LoadUnitData);
+        M3_ManagerHub.Instance.EventManager.Subscribe<M3_Event_ReadLocaleFile>(LoadLocaleData);
 
         LoadModData();
     }
 
     public override void Destroy()
     {
-        M3_EventManager.Unsubscribe<M3_Event_ReadTileFile>(LoadTileData);
-        M3_EventManager.Unsubscribe<M3_Event_ReadUnitFile>(LoadUnitData);
-        M3_EventManager.Unsubscribe<M3_Event_ReadLocaleFile>(LoadLocaleData);
+        M3_ManagerHub.Instance.EventManager.Unsubscribe<M3_Event_ReadTileFile>(LoadTileData);
+        M3_ManagerHub.Instance.EventManager.Unsubscribe<M3_Event_ReadUnitFile>(LoadUnitData);
+        M3_ManagerHub.Instance.EventManager.Unsubscribe<M3_Event_ReadLocaleFile>(LoadLocaleData);
 
         _LocaleStringDict.Clear();
     }
@@ -178,19 +178,19 @@ public class M3_DataManager : M3_Manager
                 foreach (string LocaleFile in ModData.LocaleList)
                 {
                     M3_Event_ReadLocaleFile RLFE = new M3_Event_ReadLocaleFile(ModData.Id, M3_PathHelper.GetModSubfilePath(LocaleFile));
-                    M3_EventManager.SendEvent<M3_Event_ReadLocaleFile>(RLFE);
+                    M3_ManagerHub.Instance.EventManager.SendEvent<M3_Event_ReadLocaleFile>(RLFE);
                 }
 
                 foreach (string TileFile in ModData.TileList)
                 {
                     M3_Event_ReadTileFile RTFE = new M3_Event_ReadTileFile(ModData.Id, M3_PathHelper.GetModSubfilePath(TileFile));
-                    M3_EventManager.SendEvent<M3_Event_ReadTileFile>(RTFE);
+                    M3_ManagerHub.Instance.EventManager.SendEvent<M3_Event_ReadTileFile>(RTFE);
                 }
 
                 foreach (string UnitFile in ModData.UnitList)
                 {
                     M3_Event_ReadUnitFile RUFE = new M3_Event_ReadUnitFile(ModData.Id, M3_PathHelper.GetModSubfilePath(UnitFile));
-                    M3_EventManager.SendEvent<M3_Event_ReadUnitFile>(RUFE);
+                    M3_ManagerHub.Instance.EventManager.SendEvent<M3_Event_ReadUnitFile>(RUFE);
                 }
             }
             catch (System.Exception Err)
