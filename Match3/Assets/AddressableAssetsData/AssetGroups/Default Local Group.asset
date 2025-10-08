@@ -20,7 +20,8 @@ MonoBehaviour:
   - m_GUID: e493bc1981d43214d9508ba29e7bd598
     m_Address: Assets/Prefabs/Gem.prefab
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - GameObject
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0926f78867fe742418a91a7ae1bfadf5, type: 2}

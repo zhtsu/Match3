@@ -83,7 +83,7 @@ public class M3_Grid : MonoBehaviour
 #if UNITY_EDITOR
             DestroyImmediate(Child.gameObject);
 #else
-            Destroy(GridContainer.gameObject);
+            Destroy(Child.gameObject);
 #endif
         }
     }

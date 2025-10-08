@@ -56,6 +56,9 @@ public class M3_GridCellContainer : MonoBehaviour
 
     private Vector3 CalFillScale(M3_FillMode FillMode, Bounds InBounds, Vector3 BakedScale)
     {
+        if (InBounds.size.x == 0 || InBounds.size.y == 0 || InBounds.size.z == 0)
+            return Vector3.one;
+
         float OutputScaleX;
         float OutputScaleY;
 

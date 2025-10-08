@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using System.Collections.Generic;
 
-public enum FB_PrefabType
+public enum M3_PrefabType
 {
-    SquareTile = 0,
+    Gem = 0,
 }
 
 public class M3_PrefabManager : M3_Manager
@@ -16,30 +16,36 @@ public class M3_PrefabManager : M3_Manager
         get { return "Prefab Manager"; }
     }
 
-    private static List<AsyncOperationHandle<GameObject>> _PrefabHandleList = new List<AsyncOperationHandle<GameObject>>();
+    private Dictionary<M3_PrefabType, AsyncOperationHandle<GameObject>> _PrefabHandleDict = new Dictionary<M3_PrefabType, AsyncOperationHandle<GameObject>>();
 
     public override void Initialize()
     {
-        foreach (string Address in M3_GameController.Instance.GameConfig.PrefabAddressList)
+        for (int i = 0; i < M3_GameController.Instance.GameConfig.PrefabTypeList.Length; i++)
         {
-            Addressables.LoadAssetAsync<GameObject>(Address).Completed += OnPrefabLoaded;
+            M3_PrefabType PrefabType = M3_GameController.Instance.GameConfig.PrefabTypeList[i];
+            string Address = M3_GameController.Instance.GameConfig.PrefabAddressList[i];
+
+            AsyncOperationHandle<GameObject> Handle = Addressables.LoadAssetAsync<GameObject>(Address);
+            Handle.Completed += OnPrefabLoaded;
+            _PrefabHandleDict.Add(PrefabType, Handle);
         }
     }
 
     public override void Destroy()
     {
-        foreach (AsyncOperationHandle<GameObject> Handle in _PrefabHandleList)
+        foreach (AsyncOperationHandle<GameObject> Handle in _PrefabHandleDict.Values)
         {
             Addressables.Release(Handle);
         }
+
+        _PrefabHandleDict.Clear();
     }
 
-    public static GameObject GetPrefab(FB_PrefabType PrefabType)
+    public GameObject GetPrefab(M3_PrefabType PrefabType)
     {
-        if (_PrefabHandleList.Count > (int)PrefabType)
+        if (_PrefabHandleDict.TryGetValue(PrefabType, out AsyncOperationHandle<GameObject> OutHandle))
         {
-            AsyncOperationHandle<GameObject> Handle = _PrefabHandleList[(int)PrefabType];
-            return Handle.Result;
+            return OutHandle.Result;
         }
 
         return null;
@@ -49,10 +55,7 @@ public class M3_PrefabManager : M3_Manager
     {
         if (Handle.Status == AsyncOperationStatus.Succeeded)
         {
-            _PrefabHandleList.Add(Handle);
-            Debug.Log(Handle.DebugName);
-
-            if (_PrefabHandleList.Count == M3_GameController.Instance.GameConfig.PrefabAddressList.Length)
+            if (_PrefabHandleDict.Count == M3_GameController.Instance.GameConfig.PrefabAddressList.Length)
             {
                 M3_ManagerHub.Instance.EventManager.SendEvent<M3_Event_PrefabsLoadCompleted>();
             }

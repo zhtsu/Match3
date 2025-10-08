@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: GameConfig
   m_EditorClassIdentifier: 
   _UIRootPrefab: {fileID: 5029403008816122358, guid: b971a58d3808ffe479c7881631251b2d, type: 3}
+  _PrefabTypeList: 00000000
   _PrefabAddressList:
   - Assets/Prefabs/Gem.prefab
+  _MouseDragThreshold: 5

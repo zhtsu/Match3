@@ -6,9 +6,15 @@ public class M3_GameConfig : ScriptableObject
     [SerializeField]
     private GameObject _UIRootPrefab;
     public GameObject UIRootPrefab { get { return _UIRootPrefab; } }
+
+    [SerializeField]
+    private M3_PrefabType[] _PrefabTypeList;
+    public M3_PrefabType[] PrefabTypeList { get { return _PrefabTypeList; } }
+
     [SerializeField]
     private string[] _PrefabAddressList;
     public string[] PrefabAddressList { get { return _PrefabAddressList; } }
+
     [SerializeField]
     private float _MouseDragThreshold = 5f;
     public float MouseDragThreshold { get { return _MouseDragThreshold; } }

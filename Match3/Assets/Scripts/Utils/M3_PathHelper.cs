@@ -9,7 +9,7 @@ public class M3_PathHelper
     {
         if (ModsPath == null)
         {
-            ModsPath = NormalizePath(Path.Combine(Application.dataPath, "Mods"));
+            ModsPath = NormalizePath(Path.Combine(Application.persistentDataPath, "Mods"));
             if (!Directory.Exists(ModsPath))
             {
                 Directory.CreateDirectory(ModsPath);

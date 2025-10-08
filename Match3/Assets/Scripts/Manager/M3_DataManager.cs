@@ -16,22 +16,16 @@ public class M3_DataManager : M3_Manager
     private List<M3_UnitData> _UnitDataList = new List<M3_UnitData>();
     private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _LocaleStringDict
         = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+    private Dictionary<string, Texture2D> TextureDict = new Dictionary<string, Texture2D>();
 
     public override void Initialize()
     {
-        M3_ManagerHub.Instance.EventManager.Subscribe<M3_Event_ReadTileFile>(LoadTileData);
-        M3_ManagerHub.Instance.EventManager.Subscribe<M3_Event_ReadUnitFile>(LoadUnitData);
-        M3_ManagerHub.Instance.EventManager.Subscribe<M3_Event_ReadLocaleFile>(LoadLocaleData);
-
         LoadModData();
+        LoadTextureData();
     }
 
     public override void Destroy()
     {
-        M3_ManagerHub.Instance.EventManager.Unsubscribe<M3_Event_ReadTileFile>(LoadTileData);
-        M3_ManagerHub.Instance.EventManager.Unsubscribe<M3_Event_ReadUnitFile>(LoadUnitData);
-        M3_ManagerHub.Instance.EventManager.Unsubscribe<M3_Event_ReadLocaleFile>(LoadLocaleData);
-
         _LocaleStringDict.Clear();
     }
 
@@ -39,7 +33,7 @@ public class M3_DataManager : M3_Manager
     // Unit Data
     //
 
-    private bool GetUnitData(string ModId, string TileId, out M3_UnitData OutUnitData)
+    public bool GetUnitData(string ModId, string TileId, out M3_UnitData OutUnitData)
     {
         foreach (M3_UnitData UnitData in _UnitDataList)
         {
@@ -54,22 +48,22 @@ public class M3_DataManager : M3_Manager
         return false;
     }
 
-    private bool HasUnitData(string ModId, string TileId)
+    public bool HasUnitData(string ModId, string TileId)
     {
         return GetUnitData(ModId, TileId, out M3_UnitData TempUnitData);
     }
 
-    private void LoadUnitData(M3_Event_ReadUnitFile Event)
+    private void LoadUnitData(string InModId, string InUnitFilePath)
     {
-        if (!File.Exists(Event.UnitFilePath))
+        if (!File.Exists(InUnitFilePath))
         {
-            Debug.LogError(Event.UnitFilePath + " no exist!");
+            Debug.LogError(InUnitFilePath + " no exist!");
             return;
         }
 
         try
         {
-            string UnitFileContent = File.ReadAllText(Event.UnitFilePath, System.Text.Encoding.UTF8);
+            string UnitFileContent = File.ReadAllText(InUnitFilePath, System.Text.Encoding.UTF8);
 
             if (M3_DataHelper.Deserialize<M3_UnitData>(UnitFileContent, out M3_UnitData UnitData))
             {
@@ -79,14 +73,14 @@ public class M3_DataManager : M3_Manager
                     return;
                 }
 
-                UnitData.BelongingModId = Event.BelongingModId;
+                UnitData.BelongingModId = InModId;
 
                 _UnitDataList.Add(UnitData);
             }
         }
         catch (System.Exception Err)
         {
-            Debug.LogError($"Fail to read {Event.UnitFilePath}\n Error: {Err.Message}");
+            Debug.LogError($"Fail to read {InUnitFilePath}\n Error: {Err.Message}");
         }
     }
 
@@ -99,7 +93,7 @@ public class M3_DataManager : M3_Manager
         return _TileDataList.FindAll(TileData => TileData.BelongingModId == ModId).ToArray();
     }
 
-    private bool GetTileData(string ModId, string TileId, out M3_TileData OutTileData)
+    public bool GetTileData(string ModId, string TileId, out M3_TileData OutTileData)
     {
         foreach (M3_TileData TileData in _TileDataList)
         {
@@ -114,22 +108,22 @@ public class M3_DataManager : M3_Manager
         return false;
     }
 
-    private bool HasTileData(string ModId, string TileId)
+    public bool HasTileData(string ModId, string TileId)
     {
         return GetTileData(ModId, TileId, out M3_TileData TempTileData);
     }
 
-    private void LoadTileData(M3_Event_ReadTileFile Event)
+    private void LoadTileData(string InModId, string InTileFilePath)
     {
-        if (!File.Exists(Event.TileFilePath))
+        if (!File.Exists(InTileFilePath))
         {
-            Debug.LogError(Event.TileFilePath + " no exist!");
+            Debug.LogError(InTileFilePath + " no exist!");
             return;
         }
 
         try
         {
-            string TileFileContent = File.ReadAllText(Event.TileFilePath, System.Text.Encoding.UTF8);
+            string TileFileContent = File.ReadAllText(InTileFilePath, System.Text.Encoding.UTF8);
 
             if (M3_DataHelper.Deserialize<M3_TileData>(TileFileContent, out M3_TileData TileData))
             {
@@ -139,14 +133,14 @@ public class M3_DataManager : M3_Manager
                     return;
                 }
 
-                TileData.BelongingModId = Event.BelongingModId;
+                TileData.BelongingModId = InModId;
 
                 _TileDataList.Add(TileData);
             }
         }
         catch (System.Exception Err)
         {
-            Debug.LogError($"Fail to read {Event.TileFilePath}\n Error: {Err.Message}");
+            Debug.LogError($"Fail to read {InTileFilePath}\n Error: {Err.Message}");
         }
     }
 
@@ -158,7 +152,7 @@ public class M3_DataManager : M3_Manager
     {
         foreach (string ModSubDir in Directory.GetDirectories(M3_PathHelper.GetModsPath()))
         {
-            string ModFilePath = M3_PathHelper.GetModSubfilePath(Path.Combine(ModSubDir, "mod.fbmod"));
+            string ModFilePath = M3_PathHelper.GetModSubfilePath(Path.Combine(ModSubDir, "mod.json"));
             if (!File.Exists(ModFilePath))
             {
                 Debug.LogError(ModFilePath + " no exist!");
@@ -174,23 +168,19 @@ public class M3_DataManager : M3_Manager
                     _ModDataList.Add(ModData);
                 }
 
-                // Load data by sending event
                 foreach (string LocaleFile in ModData.LocaleList)
                 {
-                    M3_Event_ReadLocaleFile RLFE = new M3_Event_ReadLocaleFile(ModData.Id, M3_PathHelper.GetModSubfilePath(LocaleFile));
-                    M3_ManagerHub.Instance.EventManager.SendEvent<M3_Event_ReadLocaleFile>(RLFE);
+                    LoadLocaleData(ModData.Id, M3_PathHelper.GetModSubfilePath(LocaleFile));
                 }
 
                 foreach (string TileFile in ModData.TileList)
                 {
-                    M3_Event_ReadTileFile RTFE = new M3_Event_ReadTileFile(ModData.Id, M3_PathHelper.GetModSubfilePath(TileFile));
-                    M3_ManagerHub.Instance.EventManager.SendEvent<M3_Event_ReadTileFile>(RTFE);
+                    LoadTileData(ModData.Id, M3_PathHelper.GetModSubfilePath(TileFile));
                 }
 
                 foreach (string UnitFile in ModData.UnitList)
                 {
-                    M3_Event_ReadUnitFile RUFE = new M3_Event_ReadUnitFile(ModData.Id, M3_PathHelper.GetModSubfilePath(UnitFile));
-                    M3_ManagerHub.Instance.EventManager.SendEvent<M3_Event_ReadUnitFile>(RUFE);
+                    LoadUnitData(ModData.Id, M3_PathHelper.GetModSubfilePath(UnitFile));
                 }
             }
             catch (System.Exception Err)
@@ -205,7 +195,7 @@ public class M3_DataManager : M3_Manager
         return _ModDataList;
     }
 
-    bool GetModData(string ModId, out M3_ModData OutModData)
+    public bool GetModData(string ModId, out M3_ModData OutModData)
     {
         foreach (M3_ModData ModData in _ModDataList)
         {
@@ -250,29 +240,29 @@ public class M3_DataManager : M3_Manager
         }
     }
 
-    private void LoadLocaleData(M3_Event_ReadLocaleFile Event)
+    private void LoadLocaleData(string InNamespace, string InLocaleFilePath)
     {
-        if (_LocaleStringDict.ContainsKey(Event.Namespace) == false)
+        if (_LocaleStringDict.ContainsKey(InNamespace) == false)
         {
-            _LocaleStringDict[Event.Namespace] = new Dictionary<string, Dictionary<string, string>>();
+            _LocaleStringDict[InNamespace] = new Dictionary<string, Dictionary<string, string>>();
         }
 
-        if (!File.Exists(Event.LocaleFilePath))
+        if (!File.Exists(InLocaleFilePath))
         {
-            Debug.LogError(Event.LocaleFilePath + " no exist!");
+            Debug.LogError(InLocaleFilePath + " no exist!");
             return;
         }
 
         try
         {
-            string LocaleFileContent = File.ReadAllText(Event.LocaleFilePath, System.Text.Encoding.UTF8);
+            string LocaleFileContent = File.ReadAllText(InLocaleFilePath, System.Text.Encoding.UTF8);
             JsonData LocaleJsonData = JsonMapper.ToObject(LocaleFileContent);
 
             foreach (string LanguageCode in LocaleJsonData.Keys)
             {
-                if (_LocaleStringDict[Event.Namespace].ContainsKey(LanguageCode) == false)
+                if (_LocaleStringDict[InNamespace].ContainsKey(LanguageCode) == false)
                 {
-                    _LocaleStringDict[Event.Namespace][LanguageCode] = new Dictionary<string, string>();
+                    _LocaleStringDict[InNamespace][LanguageCode] = new Dictionary<string, string>();
                 }
 
                 JsonData StringJsonData = LocaleJsonData[LanguageCode];
@@ -280,13 +270,85 @@ public class M3_DataManager : M3_Manager
                 foreach (string StringId in StringJsonData.Keys)
                 {
                     string LocaleString = (string)StringJsonData[StringId];
-                    _LocaleStringDict[Event.Namespace][LanguageCode].Add(StringId, LocaleString);
+                    _LocaleStringDict[InNamespace][LanguageCode].Add(StringId, LocaleString);
                 }
             }
         }
         catch (System.Exception Err)
         {
-            Debug.LogError($"Fail to read {Event.LocaleFilePath}\n Error: {Err.Message}");
+            Debug.LogError($"Fail to read {InLocaleFilePath}\n Error: {Err.Message}");
+        }
+    }
+
+    //
+    // Texture Data
+    //
+
+    private void AsyncLoadTexture(string TexturePath)
+    {
+        if (TextureDict.ContainsKey(TexturePath))
+        {
+            return;
+        }
+
+        if (!File.Exists(TexturePath))
+        {
+            Debug.LogError(TexturePath + " no exist!");
+            return;
+        }
+        try
+        {
+            byte[] TextureData = File.ReadAllBytes(TexturePath);
+            Texture2D NewTexture = new Texture2D(2, 2);
+            if (NewTexture.LoadImage(TextureData))
+            {
+                TextureDict[TexturePath] = NewTexture;
+            }
+            else
+            {
+                Debug.LogError("Fail to load texture: " + TexturePath);
+            }
+        }
+        catch (System.Exception Err)
+        {
+            Debug.LogError($"Fail to read {TexturePath}\n Error: {Err.Message}");
+        }
+    }
+
+    public bool GetTexture(string TexturePath, out Texture2D OutTexture)
+    {
+        if (TextureDict.TryGetValue(TexturePath, out Texture2D TempTexture))
+        {
+            OutTexture = TempTexture;
+            return true;
+        }
+
+        OutTexture = null;
+        return false;
+    }
+
+    private void LoadTextureData()
+    {
+        foreach (M3_UnitData UnitData in _UnitDataList)
+        {
+            foreach (M3_AnimationData AnimData in UnitData.AnimationTable.Values)
+            {
+                foreach (string TexturePath in AnimData.Keyframes)
+                {
+                    AsyncLoadTexture(M3_PathHelper.GetModSubfilePath(TexturePath));
+                }
+            }
+        }
+
+        foreach (M3_TileData TileData in _TileDataList)
+        {
+            foreach (M3_AnimationData AnimData in TileData.AnimationTable.Values)
+            {
+                foreach (string TexturePath in AnimData.Keyframes)
+                {
+                    AsyncLoadTexture(M3_PathHelper.GetModSubfilePath(TexturePath));
+                }
+            }
         }
     }
 }

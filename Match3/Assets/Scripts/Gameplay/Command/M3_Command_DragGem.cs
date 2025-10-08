@@ -21,7 +21,6 @@ public class M3_Command_DragGem : M3_Command
     public override void Execute()
     {
         _IsExecuting = true;
-        Debug.Log("Move" + _DraggedGem + "with" + _DragDirection);
     }
 
     public override string C2String()

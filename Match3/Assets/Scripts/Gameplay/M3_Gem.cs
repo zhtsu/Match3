@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class M3_Gem : MonoBehaviour, M3_IGridCell
+public class M3_Gem : M3_Unit, M3_IGridCell
 {
     public Vector2Int CellCoords { get; set; }
     public M3_Grid ParentGrid { get; set; }
@@ -19,19 +19,18 @@ public class M3_Gem : MonoBehaviour, M3_IGridCell
 
     }
 
-    public void OnMouseDown()
+    public void OnMouseDownEvent()
     {
         _PreMouseClickPos = Input.mousePosition;
     }
-
-    public void OnMouseUp()
+    public void OnMouseUpEvent()
     {
         Vector2 Delta = (Vector2)Input.mousePosition - _PreMouseClickPos;
         float Threshold = M3_GameController.Instance.GameConfig.MouseDragThreshold;
 
         if (Delta.magnitude < Threshold)
         {
-            Debug.Log("Mouse Click");
+
         }
         else
         {
