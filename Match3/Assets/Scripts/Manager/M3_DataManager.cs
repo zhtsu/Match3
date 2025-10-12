@@ -1,5 +1,5 @@
 using LitJson;
-using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -16,12 +16,12 @@ public class M3_DataManager : M3_Manager
     private List<M3_UnitData> _UnitDataList = new List<M3_UnitData>();
     private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _LocaleStringDict
         = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
-    private Dictionary<string, Texture2D> TextureDict = new Dictionary<string, Texture2D>();
 
     public override void Initialize()
     {
         LoadModData();
         LoadTextureData();
+        LoadScriptData();
     }
 
     public override void Destroy()
@@ -281,61 +281,20 @@ public class M3_DataManager : M3_Manager
     }
 
     //
-    // Texture Data
+    // Load Assets from Data
     //
-
-    private void AsyncLoadTexture(string TexturePath)
-    {
-        if (TextureDict.ContainsKey(TexturePath))
-        {
-            return;
-        }
-
-        if (!File.Exists(TexturePath))
-        {
-            Debug.LogError(TexturePath + " no exist!");
-            return;
-        }
-        try
-        {
-            byte[] TextureData = File.ReadAllBytes(TexturePath);
-            Texture2D NewTexture = new Texture2D(2, 2);
-            if (NewTexture.LoadImage(TextureData))
-            {
-                TextureDict[TexturePath] = NewTexture;
-            }
-            else
-            {
-                Debug.LogError("Fail to load texture: " + TexturePath);
-            }
-        }
-        catch (System.Exception Err)
-        {
-            Debug.LogError($"Fail to read {TexturePath}\n Error: {Err.Message}");
-        }
-    }
-
-    public bool GetTexture(string TexturePath, out Texture2D OutTexture)
-    {
-        if (TextureDict.TryGetValue(TexturePath, out Texture2D TempTexture))
-        {
-            OutTexture = TempTexture;
-            return true;
-        }
-
-        OutTexture = null;
-        return false;
-    }
 
     private void LoadTextureData()
     {
+        List<string> TexturePathList = new List<string>();
+
         foreach (M3_UnitData UnitData in _UnitDataList)
         {
             foreach (M3_AnimationData AnimData in UnitData.AnimationTable.Values)
             {
                 foreach (string TexturePath in AnimData.Keyframes)
                 {
-                    AsyncLoadTexture(M3_PathHelper.GetModSubfilePath(TexturePath));
+                    TexturePathList.Add(M3_PathHelper.GetModSubfilePath(TexturePath));
                 }
             }
         }
@@ -346,9 +305,28 @@ public class M3_DataManager : M3_Manager
             {
                 foreach (string TexturePath in AnimData.Keyframes)
                 {
-                    AsyncLoadTexture(M3_PathHelper.GetModSubfilePath(TexturePath));
+                    TexturePathList.Add(M3_PathHelper.GetModSubfilePath(TexturePath));
                 }
             }
         }
+
+        M3_EventBus.SendEvent(new M3_Event_TexturesReadCompleted(TexturePathList));
+    }
+
+    private void LoadScriptData()
+    {
+        List<string> ScriptPathList = new List<string>();
+
+        foreach (M3_UnitData UnitData in _UnitDataList)
+        {
+            ScriptPathList.Add(M3_PathHelper.GetModSubfilePath(UnitData.ScriptPath));
+        }
+
+        foreach (M3_TileData TileData in _TileDataList)
+        {
+            ScriptPathList.Add(M3_PathHelper.GetModSubfilePath(TileData.ScriptPath));
+        }
+
+        M3_EventBus.SendEvent(new M3_Event_ScriptsReadCompleted(ScriptPathList));
     }
 }

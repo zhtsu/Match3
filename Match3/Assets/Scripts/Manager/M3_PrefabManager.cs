@@ -57,7 +57,7 @@ public class M3_PrefabManager : M3_Manager
         {
             if (_PrefabHandleDict.Count == M3_GameController.Instance.GameConfig.PrefabAddressList.Length)
             {
-                M3_ManagerHub.Instance.EventManager.SendEvent<M3_Event_PrefabsLoadCompleted>();
+                M3_EventBus.SendEvent<M3_Event_PrefabsLoadCompleted>();
             }
         }
     }

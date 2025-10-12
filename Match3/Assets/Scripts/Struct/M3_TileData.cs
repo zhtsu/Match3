@@ -7,5 +7,7 @@ public struct M3_TileData
     public string Name;
     public string Description;
     public Dictionary<string, M3_AnimationData> AnimationTable;
+    public string ScriptPath;
+    // from mod data
     public string BelongingModId;
 }

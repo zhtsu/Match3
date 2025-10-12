@@ -22,7 +22,10 @@ public class M3_Gem : M3_Unit, M3_IGridCell
     public void OnMouseDownEvent()
     {
         _PreMouseClickPos = Input.mousePosition;
+
+        CallScriptFunc("OnMouseDown");
     }
+
     public void OnMouseUpEvent()
     {
         Vector2 Delta = (Vector2)Input.mousePosition - _PreMouseClickPos;
@@ -38,6 +41,8 @@ public class M3_Gem : M3_Unit, M3_IGridCell
             M3_ManagerHub.Instance.CommandManager.PushCommand(
                 new M3_Command_DragGem(this, Direction));
         }
+
+        CallScriptFunc("OnMouseUp");
     }
 
     private M3_MouseMoveDirection GetMouseMoveDirection(Vector2 Delta)

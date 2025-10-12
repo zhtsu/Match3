@@ -1,28 +1,13 @@
 using System;
 using System.Collections.Generic;
 
-public class M3_EventManager : M3_Manager
+public class M3_EventBus
 {
-    public override string ManagerName
-    {
-        get { return "Event Manager"; }
-    }
-
     public delegate void EventHandler<T>(T Event);
 
-    private Dictionary<Type, Delegate> _EventHandlers = new Dictionary<Type, Delegate>();
+    private static Dictionary<Type, Delegate> _EventHandlers = new Dictionary<Type, Delegate>();
 
-    public override void Initialize()
-    {
-
-    }
-
-    public override void Destroy()
-    {
-
-    }
-
-    public void SendEvent<T>(T Event = default)
+    public static void SendEvent<T>(T Event = default)
         where T : M3_Event
     {
         Type EventType = typeof(T);
@@ -33,7 +18,7 @@ public class M3_EventManager : M3_Manager
         }
     }
 
-    public void Subscribe<T>(EventHandler<T> Handler)
+    public static void Subscribe<T>(EventHandler<T> Handler)
     {
         Type EventType = typeof(T);
 
@@ -47,7 +32,7 @@ public class M3_EventManager : M3_Manager
         }
     }
 
-    public void Unsubscribe<T>(EventHandler<T> Handler)
+    public static void Unsubscribe<T>(EventHandler<T> Handler)
     {
         Type EventType = typeof(T);
 

@@ -21,6 +21,9 @@ public class M3_PathHelper
 
     public static string GetModSubfilePath(string FilePath)
     {
+        if (string.IsNullOrEmpty(FilePath))
+            return GetModsPath();
+
         return NormalizePath(Path.Combine(GetModsPath(), FilePath));
     }
 
