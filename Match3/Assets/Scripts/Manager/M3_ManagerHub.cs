@@ -44,6 +44,8 @@ public class M3_ManagerHub
 
         // Third initialize
         InitManager<M3_DataManager>(DataManager);
+
+        M3_EventBus.SendEvent(new M3_Event_ManagerHubReady());
     }
 
     public void Destroy()

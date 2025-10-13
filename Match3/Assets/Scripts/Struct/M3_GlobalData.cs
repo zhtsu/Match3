@@ -13,6 +13,7 @@ public struct M3_GlobalData
 {
     public M3_MouseMoveDirection MouseDragDirection;
     public bool IsGameReady;
+    public bool IsManagerHubReady;
     public bool IsPrefabsLoadCompleted;
     public bool IsTexturesLoadCompleted;
     public bool IsScriptsLoadCompleted;

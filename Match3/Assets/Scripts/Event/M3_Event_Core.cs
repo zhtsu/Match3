@@ -2,20 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class M3_Event_PrefabsLoadCompleted : M3_Event
-{
-
-}
-
-public class M3_Event_TexturesLoadCompleted : M3_Event
-{
-
-}
-
-public class M3_Event_ScriptsLoadCompleted : M3_Event
-{
-
-}
+public class M3_Event_PrefabsLoadCompleted : M3_Event { }
+public class M3_Event_TexturesLoadCompleted : M3_Event { }
+public class M3_Event_ScriptsLoadCompleted : M3_Event { }
+public class M3_Event_ManagerHubReady : M3_Event { }
+public class M3_Event_GameReady : M3_Event { }
 
 public class M3_Event_ScriptsReadCompleted : M3_Event
 {
@@ -35,9 +26,4 @@ public class M3_Event_TexturesReadCompleted : M3_Event
     {
         TextureList = InTextureList;
     }
-}
-
-public class M3_Event_GameReady : M3_Event
-{
-
 }

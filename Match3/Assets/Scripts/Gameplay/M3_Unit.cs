@@ -59,7 +59,7 @@ public class M3_Unit : MonoBehaviour
         {
             _ActionScript = OutLuaTable;
             _ActionScript.Set("Self", this);
-            _ActionScript.Set("ModAPI", M3_GameController.Instance.ModAPI);
+            _ActionScript.Set("MODAPI", M3_GameController.Instance.MODAPI);
         }
     }
 

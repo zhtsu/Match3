@@ -17,12 +17,12 @@ public class M3_GameController : MonoBehaviour
 
     private static M3_GameController _Instance;
     private M3_GlobalData _GlobalData;
-    private M3_ModAPI _ModAPI = new M3_ModAPI();
+    private M3_MODAPI _MODAPI = new M3_MODAPI();
 
     public static M3_GameController Instance { get { return _Instance; } }
     public M3_GameConfig GameConfig { get { return _GameConfig; } }
     public M3_GlobalData GlobalData { get { return _GlobalData; } }
-    public M3_ModAPI ModAPI { get { return _ModAPI; } }
+    public M3_MODAPI MODAPI { get { return _MODAPI; } }
 
     private void Awake()
     {
@@ -49,23 +49,27 @@ public class M3_GameController : MonoBehaviour
             Instantiate(M3_GameController.Instance.GameConfig.UIRootPrefab);
         }
 
+        M3_UIRoot UIRoot = Object.FindFirstObjectByType<M3_UIRoot>();
+        if (UIRoot != null)
+        {
+            UIRoot.OpenUI(M3_UIType.LoadingScreen, M3_UILayerType.Top);
+        }
+
         M3_EventBus.Subscribe<M3_Event_GameReady>(OnGameReady);
+        M3_EventBus.Subscribe<M3_Event_ManagerHubReady>(OnManagerHubReady);
         M3_EventBus.Subscribe<M3_Event_TexturesLoadCompleted>(OnTexturesLoadCompleted);
         M3_EventBus.Subscribe<M3_Event_PrefabsLoadCompleted>(OnPrefabsLoadCompleted);
         M3_EventBus.Subscribe<M3_Event_ScriptsLoadCompleted>(OnScriptsLoadCompleted);
 
         M3_ManagerHub.Instance.Initialize();
-
-        
-
-        // M3_ManagerHub.Instance.UIManager.OpenUI(M3_UIType.MainMenu);
     }
 
     private bool CheckGameReady()
     {
         return _GlobalData.IsPrefabsLoadCompleted &&
                _GlobalData.IsTexturesLoadCompleted &&
-               _GlobalData.IsScriptsLoadCompleted;
+               _GlobalData.IsScriptsLoadCompleted &&
+               _GlobalData.IsManagerHubReady;
     }
 
     private void Update()
@@ -96,30 +100,48 @@ public class M3_GameController : MonoBehaviour
         _GlobalData.MouseDragDirection = Direction;
     }
 
+    private void OnManagerHubReady(M3_Event_ManagerHubReady Event)
+    {
+        Debug.Log("Manager Hub Ready");
+        M3_EventBus.Unsubscribe<M3_Event_ManagerHubReady>(OnManagerHubReady);
+
+        _GlobalData.IsManagerHubReady = true;
+    }
+
     private void OnGameReady(M3_Event_GameReady Event)
     {
+        Debug.Log("Game Ready");
+        M3_EventBus.Unsubscribe<M3_Event_GameReady>(OnGameReady);
+
+        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
+        UIManager.CloseUI(M3_UIType.LoadingScreen);
+        UIManager.OpenUI(M3_UIType.MainMenu);
+
         Test();
     }
 
     private void OnTexturesLoadCompleted(M3_Event_TexturesLoadCompleted Event)
     {
         Debug.Log("Textures Load Completed");
-        _GlobalData.IsTexturesLoadCompleted = true;
         M3_EventBus.Unsubscribe<M3_Event_TexturesLoadCompleted>(OnTexturesLoadCompleted);
+
+        _GlobalData.IsTexturesLoadCompleted = true;
     }
 
     private void OnPrefabsLoadCompleted(M3_Event_PrefabsLoadCompleted Event)
     {
         Debug.Log("Prefabs Load Completed");
-        _GlobalData.IsPrefabsLoadCompleted = true;
         M3_EventBus.Unsubscribe<M3_Event_PrefabsLoadCompleted>(OnPrefabsLoadCompleted);
+
+        _GlobalData.IsPrefabsLoadCompleted = true;
     }
 
     private void OnScriptsLoadCompleted(M3_Event_ScriptsLoadCompleted Event)
     {
         Debug.Log("Scripts Load Completed");
-        _GlobalData.IsScriptsLoadCompleted = true;
         M3_EventBus.Unsubscribe<M3_Event_ScriptsLoadCompleted>(OnScriptsLoadCompleted);
+
+        _GlobalData.IsScriptsLoadCompleted = true;
     }
 
     void Test()
