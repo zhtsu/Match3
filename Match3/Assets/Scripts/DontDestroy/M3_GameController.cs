@@ -36,6 +36,7 @@ public class M3_GameController : MonoBehaviour
         _GlobalData.IsPrefabsLoadCompleted = false;
         _GlobalData.IsTexturesLoadCompleted = false;
         _GlobalData.IsScriptsLoadCompleted = false;
+        _GlobalData.IsStoriesLoadCompleted = false;
 
         _Instance = this;
     }
@@ -60,6 +61,7 @@ public class M3_GameController : MonoBehaviour
         M3_EventBus.Subscribe<M3_Event_TexturesLoadCompleted>(OnTexturesLoadCompleted);
         M3_EventBus.Subscribe<M3_Event_PrefabsLoadCompleted>(OnPrefabsLoadCompleted);
         M3_EventBus.Subscribe<M3_Event_ScriptsLoadCompleted>(OnScriptsLoadCompleted);
+        M3_EventBus.Subscribe<M3_Event_StoriesLoadCompleted>(OnStoriesLoadCompleted);
 
         M3_ManagerHub.Instance.Initialize();
     }
@@ -69,6 +71,7 @@ public class M3_GameController : MonoBehaviour
         return _GlobalData.IsPrefabsLoadCompleted &&
                _GlobalData.IsTexturesLoadCompleted &&
                _GlobalData.IsScriptsLoadCompleted &&
+               _GlobalData.IsStoriesLoadCompleted &&
                _GlobalData.IsManagerHubReady;
     }
 
@@ -78,7 +81,6 @@ public class M3_GameController : MonoBehaviour
         {
             if (CheckGameReady())
             {
-                Debug.Log("Game Ready");
                 _GlobalData.IsGameReady = true;
                 M3_EventBus.SendEvent(new M3_Event_GameReady());
             }
@@ -142,6 +144,22 @@ public class M3_GameController : MonoBehaviour
         M3_EventBus.Unsubscribe<M3_Event_ScriptsLoadCompleted>(OnScriptsLoadCompleted);
 
         _GlobalData.IsScriptsLoadCompleted = true;
+    }
+
+    private void OnStoriesLoadCompleted(M3_Event_StoriesLoadCompleted Event)
+    {
+        Debug.Log("Stories Load Completed");
+        M3_EventBus.Unsubscribe<M3_Event_StoriesLoadCompleted>(OnStoriesLoadCompleted);
+
+        _GlobalData.IsStoriesLoadCompleted = true;
+
+        M3_StoryManager StoryManager = M3_ManagerHub.Instance.StoryManager;
+
+        string StoryId = M3_PathHelper.GetModSubfilePath("Animals/stories/main.ink");
+        if (StoryManager.GetStory(StoryId, out Ink.Runtime.Story OutStory))
+        {
+            Debug.Log(OutStory.Continue());
+        }
     }
 
     void Test()

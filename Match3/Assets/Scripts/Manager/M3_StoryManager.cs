@@ -1,0 +1,115 @@
+using Ink.Runtime;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using UnityEngine;
+using XLua;
+
+public class M3_StoryManager : M3_Manager
+{
+    public override string ManagerName
+    {
+        get { return "Story Manager"; }
+    }
+
+    private Dictionary<string, Story> _StoryDict = new Dictionary<string, Story>();
+
+    public override void Initialize()
+    {
+        M3_EventBus.Subscribe<M3_Event_StoriesReadCompleted>(OnStoriesReadCompleted);
+    }
+
+    public override void Destroy()
+    {
+        M3_EventBus.Unsubscribe<M3_Event_StoriesReadCompleted>(OnStoriesReadCompleted);
+    }
+
+    private void OnStoriesReadCompleted(M3_Event_StoriesReadCompleted Event)
+    {
+        LoadStoriesAsync(Event.MainInkFileList).ContinueWith((Task<bool> LoadTask) =>
+        {
+            M3_EventBus.SendEvent<M3_Event_StoriesLoadCompleted>();
+        });
+    }
+
+    private async Task<bool> LoadStoriesAsync(List<string> MainInkFileList)
+    {
+        List<Task<bool>> LoadTasks = new List<Task<bool>>();
+        foreach (string MainInkFilePath in MainInkFileList)
+        {
+            LoadTasks.Add(LoadStoryAsync(MainInkFilePath));
+        }
+
+        bool[] Results = await Task.WhenAll(LoadTasks);
+        foreach (bool Result in Results)
+        {
+            if (!Result)
+            {
+                return false;
+            }
+        }
+
+        Debug.Log("[StoryManager] All ink file loaded successfully.");
+        return true;
+    }
+
+    private async Task<bool> LoadStoryAsync(string MainInkFilePath)
+    {
+        if (_StoryDict.ContainsKey(MainInkFilePath))
+        {
+            Debug.LogWarning($"[StoryManager] Duplicated story ID: {MainInkFilePath}");
+            return false;
+        }
+
+        if (!File.Exists(MainInkFilePath))
+        {
+            Debug.LogWarning($"[StoryManager] {MainInkFilePath} no exist!");
+            return false;
+        }
+
+        string MainInkFileText = null;
+
+        try
+        {
+            MainInkFileText = await Task.Run(() => File.ReadAllText(MainInkFilePath));
+        }
+        catch (System.Exception Err)
+        {
+            Debug.LogError($"[StoryManager] Fail to read {MainInkFilePath}\n Error: {Err.Message}");
+        }
+
+        var NewCompiler = new Ink.Compiler(MainInkFileText, new Ink.Compiler.Options
+        {
+            countAllVisits = true,
+            fileHandler = new UnityInkFileHandler(
+                System.IO.Path.GetDirectoryName(MainInkFilePath)
+            )
+        });
+
+        Story NewStory = null;
+        try
+        {
+            NewStory = NewCompiler.Compile();
+        }
+        catch(System.Exception Ex)
+        {
+            Debug.LogError(Ex);
+        }
+        
+        _StoryDict[MainInkFilePath] = NewStory;
+        return true;
+    }
+
+    public bool GetStory(string StoryId, out Story OutStory)
+    {
+        if (_StoryDict.TryGetValue(StoryId, out Story TempStory))
+        {
+            OutStory = TempStory;
+            return true;
+        }
+
+        OutStory = null;
+        return false;
+    }
+}

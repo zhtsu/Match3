@@ -4,6 +4,7 @@ public class M3_ManagerHub
 {
     public M3_ScriptManager ScriptManager { get; private set; }
     public M3_TextureManager TextureManager { get; private set; }
+    public M3_StoryManager StoryManager { get; private set; }
     public M3_DataManager DataManager { get; private set; }
     public M3_PrefabManager PrefabManager { get; private set; }
     public M3_UIManager UIManager { get; private set; }
@@ -28,6 +29,7 @@ public class M3_ManagerHub
     {
         ScriptManager = new M3_ScriptManager();
         TextureManager = new M3_TextureManager();
+        StoryManager = new M3_StoryManager();
         DataManager = new M3_DataManager();
         PrefabManager = new M3_PrefabManager();
         UIManager = new M3_UIManager();
@@ -41,6 +43,7 @@ public class M3_ManagerHub
         InitManager<M3_PrefabManager>(PrefabManager);
         InitManager<M3_ScriptManager>(ScriptManager);
         InitManager<M3_TextureManager>(TextureManager);
+        InitManager<M3_StoryManager>(StoryManager);
 
         // Third initialize
         InitManager<M3_DataManager>(DataManager);
@@ -56,6 +59,7 @@ public class M3_ManagerHub
         // Second destroy
         DestroyManager<M3_ScriptManager>(ScriptManager);
         DestroyManager<M3_TextureManager>(TextureManager);
+        DestroyManager<M3_StoryManager>(StoryManager);
 
         // Third destroy
         DestroyManager<M3_PrefabManager>(PrefabManager);

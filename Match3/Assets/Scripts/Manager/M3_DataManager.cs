@@ -1,5 +1,5 @@
 using LitJson;
-using System.Threading.Tasks;
+using Ink.Runtime;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -22,6 +22,7 @@ public class M3_DataManager : M3_Manager
         LoadModData();
         LoadTextureData();
         LoadScriptData();
+        LoadStoriesData();
     }
 
     public override void Destroy()
@@ -152,7 +153,7 @@ public class M3_DataManager : M3_Manager
     {
         foreach (string ModSubDir in Directory.GetDirectories(M3_PathHelper.GetModsPath()))
         {
-            string ModFilePath = M3_PathHelper.GetModSubfilePath(Path.Combine(ModSubDir, "mod.json"));
+            string ModFilePath = M3_PathHelper.GetModSubfilePath(System.IO.Path.Combine(ModSubDir, "mod.json"));
             if (!File.Exists(ModFilePath))
             {
                 Debug.LogError(ModFilePath + " no exist!");
@@ -328,5 +329,17 @@ public class M3_DataManager : M3_Manager
         }
 
         M3_EventBus.SendEvent(new M3_Event_ScriptsReadCompleted(ScriptPathList));
+    }
+
+    private void LoadStoriesData()
+    {
+        List<string> MainInkFileList = new List<string>();
+
+        foreach (M3_ModData ModData in _ModDataList)
+        {
+            MainInkFileList.Add(M3_PathHelper.GetModSubfilePath(ModData.MainInkFile));
+        }
+
+        M3_EventBus.SendEvent(new M3_Event_StoriesReadCompleted(MainInkFileList));
     }
 }

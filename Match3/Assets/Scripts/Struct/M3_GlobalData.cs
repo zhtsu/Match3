@@ -17,5 +17,6 @@ public struct M3_GlobalData
     public bool IsPrefabsLoadCompleted;
     public bool IsTexturesLoadCompleted;
     public bool IsScriptsLoadCompleted;
+    public bool IsStoriesLoadCompleted;
     public M3_GameState CurrentGameState;
 };

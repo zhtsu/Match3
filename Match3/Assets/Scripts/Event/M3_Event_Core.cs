@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class M3_Event_PrefabsLoadCompleted : M3_Event { }
 public class M3_Event_TexturesLoadCompleted : M3_Event { }
+public class M3_Event_StoriesLoadCompleted : M3_Event { }
 public class M3_Event_ScriptsLoadCompleted : M3_Event { }
 public class M3_Event_ManagerHubReady : M3_Event { }
 public class M3_Event_GameReady : M3_Event { }
@@ -25,5 +26,15 @@ public class M3_Event_TexturesReadCompleted : M3_Event
     public M3_Event_TexturesReadCompleted(List<string> InTextureList)
     {
         TextureList = InTextureList;
+    }
+}
+
+public class M3_Event_StoriesReadCompleted : M3_Event
+{
+    public List<string> MainInkFileList;
+
+    public M3_Event_StoriesReadCompleted(List<string> InMainInkFileList)
+    {
+        MainInkFileList = InMainInkFileList;
     }
 }

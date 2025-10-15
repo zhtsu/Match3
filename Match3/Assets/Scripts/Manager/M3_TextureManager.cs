@@ -93,9 +93,9 @@ public class M3_TextureManager : M3_Manager
         }
     }
 
-    public bool GetTexture(string TexturePath, out Texture2D OutTexture)
+    public bool GetTexture(string TextureId, out Texture2D OutTexture)
     {
-        if (_TextureDict.TryGetValue(TexturePath, out Texture2D TempTexture))
+        if (_TextureDict.TryGetValue(TextureId, out Texture2D TempTexture))
         {
             OutTexture = TempTexture;
             return true;

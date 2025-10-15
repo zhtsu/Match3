@@ -172,15 +172,15 @@ public class M3_ScriptManager : M3_Manager
         return new T[0];
     }
 
-    public bool GetScript(string ScrptPath, out LuaTable OutLuaTable)
+    public bool GetScript(string ScriptId, out LuaTable OutLuaTable)
     {
-        if (string.IsNullOrEmpty(ScrptPath))
+        if (string.IsNullOrEmpty(ScriptId))
         {
             OutLuaTable = null;
             return false;
         }
 
-        if (_LuaTableCache.TryGetValue(ScrptPath, out LuaTable TempLuaTable))
+        if (_LuaTableCache.TryGetValue(ScriptId, out LuaTable TempLuaTable))
         {
             OutLuaTable = TempLuaTable;
             return true;
