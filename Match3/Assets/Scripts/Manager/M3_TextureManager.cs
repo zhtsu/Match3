@@ -12,7 +12,7 @@ public class M3_TextureManager : M3_Manager
         get { return "Texture Manager"; }
     }
 
-    private Dictionary<string, Texture2D> _TextureDict = new Dictionary<string, Texture2D>();
+    private Dictionary<Hash128, Texture2D> _TextureDict = new Dictionary<Hash128, Texture2D>();
 
     public override void Initialize()
     {
@@ -55,9 +55,10 @@ public class M3_TextureManager : M3_Manager
 
     private async Task<bool> LoadTextureAsync(string TexturePath)
     {
-        if (_TextureDict.ContainsKey(TexturePath))
+        Hash128 TextureId = Hash128.Compute(TexturePath);
+        if (_TextureDict.ContainsKey(TextureId))
         {
-            Debug.LogWarning($"[TextureManager] Duplicated texture ID: {TexturePath}");
+            Debug.LogWarning($"[TextureManager] Duplicated texture: {TexturePath} Hash: {TextureId}");
             return false;
         }
 
@@ -82,7 +83,7 @@ public class M3_TextureManager : M3_Manager
 
         if (NewTexture.LoadImage(TextureData))
         {
-            _TextureDict[TexturePath] = NewTexture;
+            _TextureDict[TextureId] = NewTexture;
             return true;
         }
         else
@@ -93,7 +94,7 @@ public class M3_TextureManager : M3_Manager
         }
     }
 
-    public bool GetTexture(string TextureId, out Texture2D OutTexture)
+    public bool GetTexture(Hash128 TextureId, out Texture2D OutTexture)
     {
         if (_TextureDict.TryGetValue(TextureId, out Texture2D TempTexture))
         {

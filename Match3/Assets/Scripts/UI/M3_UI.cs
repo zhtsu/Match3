@@ -9,7 +9,7 @@ public enum M3_UIType
     PauseMenu,
     Settings,
     LoadingScreen,
-    MODManager,
+    ModManager,
     Max
 }
 

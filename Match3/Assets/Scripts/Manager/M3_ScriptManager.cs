@@ -13,7 +13,7 @@ public class M3_ScriptManager : M3_Manager
     }
 
     private XLua.LuaEnv _LuaEnv { get; set; }
-    private Dictionary<string, LuaTable> _LuaTableCache = new Dictionary<string, LuaTable>();
+    private Dictionary<Hash128, LuaTable> _LuaTableCache = new Dictionary<Hash128, LuaTable>();
 
     public override void Initialize()
     {
@@ -78,9 +78,10 @@ public class M3_ScriptManager : M3_Manager
 
     private async Task<bool> LoadLuaTableAsync(string ScriptPath)
     {
-        if (_LuaTableCache.ContainsKey(ScriptPath))
+        Hash128 ScriptId = Hash128.Compute(ScriptPath);
+        if (_LuaTableCache.ContainsKey(ScriptId))
         {
-            Debug.LogWarning($"[ScriptManager] Duplicated script ID: {ScriptPath}");
+            Debug.LogWarning($"[ScriptManager] Duplicated script: {ScriptPath} Hash: {ScriptId}");
             return false;
         }
 
@@ -99,14 +100,14 @@ public class M3_ScriptManager : M3_Manager
         LuaTable Table = ReturnLuaTable(LuaCode);
         if (Table != null)
         {
-            if (_LuaTableCache.ContainsKey(ScriptPath))
+            if (_LuaTableCache.ContainsKey(ScriptId))
             {
                 Debug.Log($"[ScriptManager] Lua script updated: {ScriptPath}");
-                _LuaTableCache[ScriptPath] = Table;
+                _LuaTableCache[ScriptId] = Table;
             }
             else
             {
-                _LuaTableCache.Add(ScriptPath, Table);
+                _LuaTableCache.Add(ScriptId, Table);
             }
 
             Debug.Log($"[ScriptManager] Lua script loaded: {ScriptPath}");
@@ -172,14 +173,8 @@ public class M3_ScriptManager : M3_Manager
         return new T[0];
     }
 
-    public bool GetScript(string ScriptId, out LuaTable OutLuaTable)
+    public bool GetScript(Hash128 ScriptId, out LuaTable OutLuaTable)
     {
-        if (string.IsNullOrEmpty(ScriptId))
-        {
-            OutLuaTable = null;
-            return false;
-        }
-
         if (_LuaTableCache.TryGetValue(ScriptId, out LuaTable TempLuaTable))
         {
             OutLuaTable = TempLuaTable;

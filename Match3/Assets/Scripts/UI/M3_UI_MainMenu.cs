@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class M3_UI_MainMenu : M3_UI
@@ -10,7 +12,7 @@ public class M3_UI_MainMenu : M3_UI
     private Button _StartButton;
 
     [SerializeField]
-    private Button _MODButton;
+    private Button _ModButton;
 
     [SerializeField]
     private Button _ConfigButton;
@@ -45,6 +47,22 @@ public class M3_UI_MainMenu : M3_UI
         _HoverEffect.rectTransform.sizeDelta = BRT.sizeDelta;
     }
 
+    private void SetPressEffect(Button InButton)
+    {
+        if (_HoverEffect != null && ColorUtility.TryParseHtmlString("#D6D6D6", out Color MyGray))
+        {
+            _HoverEffect.GetComponent<Image>().color = MyGray;
+        }
+    }
+
+    private void SetReleaseEffect(Button InButton)
+    {
+        if (_HoverEffect != null)
+        {
+            _HoverEffect.GetComponent<Image>().color = Color.white;
+        }
+    }
+
     private void SetButtonTextColor(Button InButton, int InColor)
     {
         if (InButton == null)
@@ -66,9 +84,32 @@ public class M3_UI_MainMenu : M3_UI
         SetHoverEffect(_StartButton);
     }
 
-    public void OnMODButtonHover()
+    public void OnStartButtonPress()
     {
-        SetHoverEffect(_MODButton);
+        SetPressEffect(_StartButton);
+    }
+
+    public void OnStartButtonRelease()
+    {
+        SetReleaseEffect(_StartButton);
+    }
+
+    public void OnModButtonHover()
+    {
+        SetHoverEffect(_ModButton);
+    }
+
+    public void OnModButtonPress()
+    {
+        SetPressEffect(_ModButton);
+    }
+
+    public void OnModButtonRelease()
+    {
+        SetReleaseEffect(_ModButton);
+
+        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
+        UIManager.OpenUI(M3_UIType.ModManager);
     }
 
     public void OnConfigButtonHover()
@@ -76,8 +117,33 @@ public class M3_UI_MainMenu : M3_UI
         SetHoverEffect(_ConfigButton);
     }
 
+    public void OnConfigButtonPress()
+    {
+        SetPressEffect(_ConfigButton);
+    }
+
+    public void OnConfigButtonRelease()
+    {
+        SetReleaseEffect(_ConfigButton);
+    }
+
     public void OnExitButtonHover()
     {
         SetHoverEffect(_ExitButton);
+    }
+
+    public void OnExitButtonPress()
+    {
+        SetPressEffect(_ExitButton);
+    }
+
+    public void OnExitButtonRelease()
+    {
+        SetReleaseEffect(_ExitButton);
+
+        Application.Quit();
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+#endif
     }
 }

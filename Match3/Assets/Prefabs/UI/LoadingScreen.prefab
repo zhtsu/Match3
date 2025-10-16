@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 6901783526417905893}
   - component: {fileID: 2862061966157353464}
   - component: {fileID: 2046404013370785399}
-  - component: {fileID: 3209906898696053483}
   m_Layer: 5
   m_Name: LoadingScreen
   m_TagString: Untagged
@@ -118,27 +117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Type: 4
---- !u!95 &3209906898696053483
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2337898779232006504}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 22bcde00763f0d44298d13580e75ac78, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  _LoadingText: {fileID: 2067890895968432173}
 --- !u!1 &3412945001096164729
 GameObject:
   m_ObjectHideFlags: 0

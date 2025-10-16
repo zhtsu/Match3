@@ -151,6 +151,38 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5259649188857554829}
+          m_TargetAssemblyTypeName: M3_UI_MainMenu, Assembly-CSharp
+          m_MethodName: OnStartButtonPress
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 3
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5259649188857554829}
+          m_TargetAssemblyTypeName: M3_UI_MainMenu, Assembly-CSharp
+          m_MethodName: OnStartButtonRelease
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1382362438067619657
 GameObject:
   m_ObjectHideFlags: 0
@@ -676,7 +708,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Type: 0
   _StartButton: {fileID: 8234441667963947031}
-  _MODButton: {fileID: 7442676978218909612}
+  _ModButton: {fileID: 7442676978218909612}
   _ConfigButton: {fileID: 436252222700840651}
   _ExitButton: {fileID: 1973499946364057331}
   _ButtonBox: {fileID: 2977599973597880991}
@@ -898,6 +930,38 @@ MonoBehaviour:
         - m_Target: {fileID: 5259649188857554829}
           m_TargetAssemblyTypeName: M3_UI_MainMenu, Assembly-CSharp
           m_MethodName: OnExitButtonHover
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5259649188857554829}
+          m_TargetAssemblyTypeName: M3_UI_MainMenu, Assembly-CSharp
+          m_MethodName: OnExitButtonPress
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 3
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5259649188857554829}
+          m_TargetAssemblyTypeName: M3_UI_MainMenu, Assembly-CSharp
+          m_MethodName: OnExitButtonRelease
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1281,7 +1345,7 @@ GameObject:
   - component: {fileID: 7442676978218909612}
   - component: {fileID: 6535542129614876915}
   m_Layer: 5
-  m_Name: MODButton
+  m_Name: ModButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1408,7 +1472,39 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 5259649188857554829}
           m_TargetAssemblyTypeName: M3_UI_MainMenu, Assembly-CSharp
-          m_MethodName: OnMODButtonHover
+          m_MethodName: OnModButtonHover
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5259649188857554829}
+          m_TargetAssemblyTypeName: M3_UI_MainMenu, Assembly-CSharp
+          m_MethodName: OnModButtonPress
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 3
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5259649188857554829}
+          m_TargetAssemblyTypeName: M3_UI_MainMenu, Assembly-CSharp
+          m_MethodName: OnModButtonRelease
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1699,7 +1795,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: MOD
+  m_text: Mod
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

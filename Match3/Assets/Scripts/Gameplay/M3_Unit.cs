@@ -12,9 +12,6 @@ public class M3_Unit : MonoBehaviour
 
     public void SetUnitData(M3_UnitData UnitData)
     {
-        M3_TextureManager TexManager = M3_ManagerHub.Instance.TextureManager;
-        M3_ScriptManager ScriptManager = M3_ManagerHub.Instance.ScriptManager;
-
         _AnimTable.Clear();
 
         foreach (string AnimName in UnitData.AnimationTable.Keys)
@@ -24,12 +21,7 @@ public class M3_Unit : MonoBehaviour
             List<Sprite> SpriteList = new List<Sprite>();
             foreach (string TexturePath in AnimData.Keyframes)
             {
-                string TextureId = M3_PathHelper.GetModSubfilePath(TexturePath);
-                if (TexManager.GetTexture(TextureId, out Texture2D Texture))
-                {
-                    Sprite NewSprite = Sprite.Create(Texture, new Rect(0, 0, Texture.width, Texture.height), new Vector2(0.5f, 0.5f));
-                    SpriteList.Add(NewSprite);
-                }
+                SpriteList.Add(M3_CommonHelper.GetSprite(TexturePath));
             }
             _AnimTable.Add(AnimName, SpriteList);
         }
@@ -54,13 +46,7 @@ public class M3_Unit : MonoBehaviour
             Collider.size = Renderer.sprite.bounds.size;
         }
 
-        string ScriptId = M3_PathHelper.GetModSubfilePath(UnitData.ScriptPath);
-        if (ScriptManager.GetScript(ScriptId, out LuaTable OutLuaTable))
-        {
-            _ActionScript = OutLuaTable;
-            _ActionScript.Set("Self", this);
-            _ActionScript.Set("MODAPI", M3_GameController.Instance.MODAPI);
-        }
+        _ActionScript = M3_CommonHelper.GetScript(UnitData.ScriptPath, this);
     }
 
     public void CallScriptFunc(string FuncName, params object[] Args)

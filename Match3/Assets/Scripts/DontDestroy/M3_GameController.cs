@@ -17,12 +17,12 @@ public class M3_GameController : MonoBehaviour
 
     private static M3_GameController _Instance;
     private M3_GlobalData _GlobalData;
-    private M3_MODAPI _MODAPI = new M3_MODAPI();
+    private M3_ModAPI _MODAPI = new M3_ModAPI();
 
     public static M3_GameController Instance { get { return _Instance; } }
     public M3_GameConfig GameConfig { get { return _GameConfig; } }
     public M3_GlobalData GlobalData { get { return _GlobalData; } }
-    public M3_MODAPI MODAPI { get { return _MODAPI; } }
+    public M3_ModAPI MODAPI { get { return _MODAPI; } }
 
     private void Awake()
     {
@@ -152,14 +152,6 @@ public class M3_GameController : MonoBehaviour
         M3_EventBus.Unsubscribe<M3_Event_StoriesLoadCompleted>(OnStoriesLoadCompleted);
 
         _GlobalData.IsStoriesLoadCompleted = true;
-
-        M3_StoryManager StoryManager = M3_ManagerHub.Instance.StoryManager;
-
-        string StoryId = M3_PathHelper.GetModSubfilePath("Animals/stories/main.ink");
-        if (StoryManager.GetStory(StoryId, out Ink.Runtime.Story OutStory))
-        {
-            Debug.Log(OutStory.Continue());
-        }
     }
 
     void Test()
@@ -168,31 +160,31 @@ public class M3_GameController : MonoBehaviour
         Grid.Initialize(3, 3, 1f);
         Grid.GenerateGrid();
 
-        M3_Gem elephant = M3_SpawnHelper.SpawnGem("animals", "elephant_gem");
+        M3_Gem elephant = M3_CommonHelper.SpawnGem("animals", "elephant_gem");
         Grid.AddCell(elephant, 0, 0, M3_FillMode.AspectFit);
 
-        M3_Gem giraffe = M3_SpawnHelper.SpawnGem("animals", "giraffe_gem");
+        M3_Gem giraffe = M3_CommonHelper.SpawnGem("animals", "giraffe_gem");
         Grid.AddCell(giraffe, 0, 1, M3_FillMode.AspectFit);
 
-        M3_Gem hippo = M3_SpawnHelper.SpawnGem("animals", "hippo_gem");
+        M3_Gem hippo = M3_CommonHelper.SpawnGem("animals", "hippo_gem");
         Grid.AddCell(hippo, 0, 2, M3_FillMode.AspectFit);
 
-        M3_Gem monkey = M3_SpawnHelper.SpawnGem("animals", "monkey_gem");
+        M3_Gem monkey = M3_CommonHelper.SpawnGem("animals", "monkey_gem");
         Grid.AddCell(monkey, 1, 0, M3_FillMode.AspectFit);
 
-        M3_Gem panda = M3_SpawnHelper.SpawnGem("animals", "panda_gem");
+        M3_Gem panda = M3_CommonHelper.SpawnGem("animals", "panda_gem");
         Grid.AddCell(panda, 1, 1, M3_FillMode.AspectFit);
 
-        M3_Gem parrot = M3_SpawnHelper.SpawnGem("animals", "parrot_gem");
+        M3_Gem parrot = M3_CommonHelper.SpawnGem("animals", "parrot_gem");
         Grid.AddCell(parrot, 1, 2, M3_FillMode.AspectFit);
 
-        M3_Gem penguin = M3_SpawnHelper.SpawnGem("animals", "penguin_gem");
+        M3_Gem penguin = M3_CommonHelper.SpawnGem("animals", "penguin_gem");
         Grid.AddCell(penguin, 2, 0, M3_FillMode.AspectFit);
 
-        M3_Gem pig = M3_SpawnHelper.SpawnGem("animals", "pig_gem");
+        M3_Gem pig = M3_CommonHelper.SpawnGem("animals", "pig_gem");
         Grid.AddCell(pig, 2, 1, M3_FillMode.AspectFit);
 
-        M3_Gem rabbit = M3_SpawnHelper.SpawnGem("animals", "rabbit_gem");
+        M3_Gem rabbit = M3_CommonHelper.SpawnGem("animals", "rabbit_gem");
         Grid.AddCell(rabbit, 2, 2, M3_FillMode.AspectFit);
     }
 }

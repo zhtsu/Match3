@@ -27,6 +27,11 @@ public class M3_PathHelper
         return NormalizePath(Path.Combine(GetModsPath(), FilePath));
     }
 
+    public static Hash128 GetHash(string FilePath)
+    {
+        return Hash128.Compute(GetModSubfilePath(FilePath));
+    }
+
     private static string NormalizePath(string InPath)
     {
         return InPath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);

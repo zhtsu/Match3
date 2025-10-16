@@ -13,7 +13,7 @@ public class M3_StoryManager : M3_Manager
         get { return "Story Manager"; }
     }
 
-    private Dictionary<string, Story> _StoryDict = new Dictionary<string, Story>();
+    private Dictionary<Hash128, Story> _StoryDict = new Dictionary<Hash128, Story>();
 
     public override void Initialize()
     {
@@ -56,9 +56,10 @@ public class M3_StoryManager : M3_Manager
 
     private async Task<bool> LoadStoryAsync(string MainInkFilePath)
     {
-        if (_StoryDict.ContainsKey(MainInkFilePath))
+        Hash128 StoryId = Hash128.Compute(MainInkFilePath);
+        if (_StoryDict.ContainsKey(StoryId))
         {
-            Debug.LogWarning($"[StoryManager] Duplicated story ID: {MainInkFilePath}");
+            Debug.LogWarning($"[StoryManager] Duplicated story: {MainInkFilePath} Hash: {StoryId}");
             return false;
         }
 
@@ -97,11 +98,11 @@ public class M3_StoryManager : M3_Manager
             Debug.LogError(Ex);
         }
         
-        _StoryDict[MainInkFilePath] = NewStory;
+        _StoryDict[StoryId] = NewStory;
         return true;
     }
 
-    public bool GetStory(string StoryId, out Story OutStory)
+    public bool GetStory(Hash128 StoryId, out Story OutStory)
     {
         if (_StoryDict.TryGetValue(StoryId, out Story TempStory))
         {
