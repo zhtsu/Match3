@@ -1,13 +1,9 @@
 using PrimeTween;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class M3_UI_CommonUI : M3_UI
 {
-
     [SerializeField]
     private Button _CloseButton;
     [SerializeField]
@@ -29,7 +25,7 @@ public class M3_UI_CommonUI : M3_UI
         Tween ScaleX = Tween.ScaleX(_MainCanvas.transform, 0f, 1f, 0.2f);
         Tween ScaleY = Tween.ScaleY(_MainCanvas.transform, 0.02f, 1f, 0.2f);
 
-        Sequence Sequence = Sequence.Create(
+        Sequence NewSequence = Sequence.Create(
             sequenceEase: Ease.OutCubic)
             .Chain(ScaleX)
             .ChainCallback(() =>
@@ -43,7 +39,7 @@ public class M3_UI_CommonUI : M3_UI
     {
         Tween ScaleY = Tween.ScaleY(_MainCanvas.transform, 1f, 0.02f, 0.1f);
 
-        Sequence Sequence = Sequence.Create(
+        Sequence NewSequence = Sequence.Create(
             sequenceEase: Ease.InCubic)
             .Chain(ScaleY)
             .ChainCallback(() =>
@@ -53,7 +49,7 @@ public class M3_UI_CommonUI : M3_UI
             .ChainCallback(() =>
             {
                 M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
-                UIManager.CloseUI(M3_UIType.Mod);
+                UIManager.CloseUI(base.Type);
             });
     }
 

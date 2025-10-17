@@ -125,6 +125,9 @@ public class M3_UI_MainMenu : M3_UI
     public void OnConfigButtonRelease()
     {
         SetReleaseEffect(_ConfigButton);
+
+        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
+        UIManager.OpenUI(M3_UIType.Config);
     }
 
     public void OnExitButtonHover()
