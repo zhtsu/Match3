@@ -13,7 +13,13 @@ MonoBehaviour:
   m_Name: GameConfig
   m_EditorClassIdentifier: 
   _UIRootPrefab: {fileID: 5029403008816122358, guid: b971a58d3808ffe479c7881631251b2d, type: 3}
-  _PrefabTypeList: 00000000
+  _PrefabTypeList: 00000000010000000200000003000000040000000500000006000000
   _PrefabAddressList:
   - Assets/Prefabs/Gem.prefab
+  - Assets/Prefabs/UI/MainMenu.prefab
+  - 
+  - 
+  - Assets/Prefabs/UI/Config.prefab
+  - Assets/Prefabs/UI/Mod.prefab
+  - Assets/Prefabs/UI/StoryView.prefab
   _MouseDragThreshold: 5

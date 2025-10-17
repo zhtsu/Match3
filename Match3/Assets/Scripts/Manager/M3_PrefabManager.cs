@@ -7,6 +7,13 @@ using System.Collections.Generic;
 public enum M3_PrefabType
 {
     Gem = 0,
+    MainMenu,
+    InGameHUD,
+    PauseMenu,
+    Config,
+    Mod,
+    StoryView,
+    Max
 }
 
 public class M3_PrefabManager : M3_Manager

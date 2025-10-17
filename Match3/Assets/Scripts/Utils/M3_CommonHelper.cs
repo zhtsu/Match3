@@ -1,3 +1,5 @@
+using Unity.VisualScripting.FullSerializer;
+using UnityEditor;
 using UnityEngine;
 using XLua;
 
@@ -21,6 +23,39 @@ public class M3_CommonHelper
         }
 
         return null;
+    }
+
+    public static GameObject GetPrefab(M3_PrefabType PrefabType)
+    {
+        M3_DataManager DataManager = M3_ManagerHub.Instance.DataManager;
+
+        GameObject GemPrefab = M3_ManagerHub.Instance.PrefabManager.GetPrefab(PrefabType);
+        if (GemPrefab != null)
+        {
+            return GemPrefab;
+        }
+
+        return null;
+    }
+
+    public static M3_PrefabType UITypeToPrefabType(M3_UIType UIType)
+    {
+        switch (UIType)
+        {
+            case M3_UIType.MainMenu:
+                return M3_PrefabType.MainMenu;
+            case M3_UIType.Mod:
+                return M3_PrefabType.Mod;
+            case M3_UIType.Config:
+                return M3_PrefabType.Config;
+        }
+
+        return M3_PrefabType.Max;
+    }
+
+    public static GameObject GetUIPrefab(M3_UIType UIType)
+    {
+        return GetPrefab(UITypeToPrefabType(UIType));
     }
 
     public static Ink.Runtime.Story GetStory(string StoryPath)

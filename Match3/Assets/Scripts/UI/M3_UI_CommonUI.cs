@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class M3_UI_Mod : M3_UI
+public class M3_UI_CommonUI : M3_UI
 {
 
     [SerializeField]
@@ -14,6 +14,8 @@ public class M3_UI_Mod : M3_UI
     private Canvas _MainCanvas;
     [SerializeField]
     private Image _WhiteMask;
+    [SerializeField]
+    private GameObject _ContentUI;
 
     private void Start()
     {

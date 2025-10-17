@@ -7,9 +7,10 @@ public enum M3_UIType
     MainMenu,
     InGameHUD,
     PauseMenu,
-    Settings,
+    Config,
     LoadingScreen,
-    ModManager,
+    Mod,
+    StoryView,
     Max
 }
 

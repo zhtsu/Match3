@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class M3_UI_Mod : M3_UI
+public class M3_UI_Config : M3_UI
 {
 
     [SerializeField]

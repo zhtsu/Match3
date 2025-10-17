@@ -192,14 +192,16 @@ MonoBehaviour:
   _MainLayer: {fileID: 8718875327799446814}
   _TopLayer: {fileID: 8777640092685872938}
   _PopupLayer: {fileID: 4713771962309928138}
-  _UITypeList: 000000000100000002000000030000000400000005000000
-  _UIPrefabList:
-  - {fileID: 2337898779232006504, guid: 0326801297557ee478e027500de2b4b4, type: 3}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 2337898779232006504, guid: 2351298707e5de94aaa0468eea8df519, type: 3}
-  - {fileID: 2337898779232006504, guid: df30db5335e3e11439b2e4010736fc8f, type: 3}
+  _LoadingScreenPrefab: {fileID: 2337898779232006504, guid: 2351298707e5de94aaa0468eea8df519, type: 3}
+  _UITypeList: 0000000001000000020000000300000004000000050000000600000007000000
+  _UIPrefabAddressList:
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
 --- !u!1 &8718875327799446814
 GameObject:
   m_ObjectHideFlags: 0

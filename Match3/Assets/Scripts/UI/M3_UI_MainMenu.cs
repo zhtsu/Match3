@@ -109,7 +109,7 @@ public class M3_UI_MainMenu : M3_UI
         SetReleaseEffect(_ModButton);
 
         M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
-        UIManager.OpenUI(M3_UIType.ModManager);
+        UIManager.OpenUI(M3_UIType.Mod);
     }
 
     public void OnConfigButtonHover()
