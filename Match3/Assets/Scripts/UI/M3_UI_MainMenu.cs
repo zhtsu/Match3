@@ -35,9 +35,9 @@ public class M3_UI_MainMenu : M3_UI
 
     private void SetHoverEffect(Button InButton)
     {
-        SetButtonTextColor(_CurrentHoveredButton, 1);
+        M3_CommonHelper.SetButtonTextColor(_CurrentHoveredButton, M3_ColorType.White);
         _CurrentHoveredButton = InButton;
-        SetButtonTextColor(_CurrentHoveredButton, 0);
+        M3_CommonHelper.SetButtonTextColor(_CurrentHoveredButton, M3_ColorType.Black);
 
         VerticalLayoutGroup VLG = _ButtonBox.GetComponentInParent<VerticalLayoutGroup>();
         Vector3 VLGPos = VLG.transform.position;
@@ -49,34 +49,12 @@ public class M3_UI_MainMenu : M3_UI
 
     private void SetPressEffect(Button InButton)
     {
-        if (_HoverEffect != null && ColorUtility.TryParseHtmlString("#D6D6D6", out Color MyGray))
-        {
-            _HoverEffect.GetComponent<Image>().color = MyGray;
-        }
+        M3_CommonHelper.SetImageColor(_HoverEffect, M3_ColorType.Cyan);
     }
 
     private void SetReleaseEffect(Button InButton)
     {
-        if (_HoverEffect != null)
-        {
-            _HoverEffect.GetComponent<Image>().color = Color.white;
-        }
-    }
-
-    private void SetButtonTextColor(Button InButton, int InColor)
-    {
-        if (InButton == null)
-            return;
-
-        TextMeshProUGUI[] ObjList = InButton.GetComponentsInChildren<TextMeshProUGUI>();
-        if (ObjList.Length == 0)
-            return;
-
-        TextMeshProUGUI TextObj = ObjList[0];
-        if (InColor == 0)
-            TextObj.color = Color.black;
-        else if (InColor == 1)
-            TextObj.color = Color.white;
+        M3_CommonHelper.SetImageColor(_HoverEffect, M3_ColorType.White);
     }
 
     public void OnStartButtonHover()
@@ -92,6 +70,9 @@ public class M3_UI_MainMenu : M3_UI
     public void OnStartButtonRelease()
     {
         SetReleaseEffect(_StartButton);
+
+        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
+        UIManager.OpenUI(M3_UIType.ModSelect);
     }
 
     public void OnModButtonHover()

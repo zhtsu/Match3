@@ -289,6 +289,11 @@ public class M3_DataManager : M3_Manager
     {
         List<string> TexturePathList = new List<string>();
 
+        foreach (M3_ModData ModData in _ModDataList)
+        {
+            TexturePathList.Add(M3_PathHelper.GetModSubfilePath(ModData.CoverImage));
+        }
+
         foreach (M3_UnitData UnitData in _UnitDataList)
         {
             foreach (M3_AnimationData AnimData in UnitData.AnimationTable.Values)

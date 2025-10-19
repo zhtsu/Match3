@@ -83,7 +83,7 @@ public class M3_StoryManager : M3_Manager
         var NewCompiler = new Ink.Compiler(MainInkFileText, new Ink.Compiler.Options
         {
             countAllVisits = true,
-            fileHandler = new UnityInkFileHandler(
+            fileHandler = new Ink.UnityFileHandler(
                 System.IO.Path.GetDirectoryName(MainInkFilePath)
             )
         });

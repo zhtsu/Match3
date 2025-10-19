@@ -6,14 +6,16 @@ using System.Collections.Generic;
 
 public enum M3_PrefabType
 {
-    Gem = 0,
+    None = 0,
+    Gem,
     MainMenu,
     InGameHUD,
     PauseMenu,
     Config,
     Mod,
     StoryView,
-    Max
+    ModSelect,
+    ModCard,
 }
 
 public class M3_PrefabManager : M3_Manager
@@ -32,9 +34,12 @@ public class M3_PrefabManager : M3_Manager
             M3_PrefabType PrefabType = M3_GameController.Instance.GameConfig.PrefabTypeList[i];
             string Address = M3_GameController.Instance.GameConfig.PrefabAddressList[i];
 
-            AsyncOperationHandle<GameObject> Handle = Addressables.LoadAssetAsync<GameObject>(Address);
-            Handle.Completed += OnPrefabLoaded;
-            _PrefabHandleDict.Add(PrefabType, Handle);
+            if (string.IsNullOrEmpty(Address) == false)
+            {
+                AsyncOperationHandle<GameObject> Handle = Addressables.LoadAssetAsync<GameObject>(Address);
+                Handle.Completed += OnPrefabLoaded;
+                _PrefabHandleDict.Add(PrefabType, Handle);
+            }
         }
     }
 
@@ -60,12 +65,19 @@ public class M3_PrefabManager : M3_Manager
 
     private void OnPrefabLoaded(AsyncOperationHandle<GameObject> Handle)
     {
-        if (Handle.Status == AsyncOperationStatus.Succeeded)
+        bool IsAllCompleted = true;
+        foreach (var Iter in _PrefabHandleDict.Values)
         {
-            if (_PrefabHandleDict.Count == M3_GameController.Instance.GameConfig.PrefabAddressList.Length)
+            if (Iter.IsDone == false)
             {
-                M3_EventBus.SendEvent<M3_Event_PrefabsLoadCompleted>();
+                IsAllCompleted = false;
+                break;
             }
+        }
+
+        if (IsAllCompleted)
+        {
+            M3_EventBus.SendEvent<M3_Event_PrefabsLoadCompleted>();
         }
     }
 }

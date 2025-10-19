@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 using static UnityEngine.GraphicsBuffer;
 
 public enum M3_UILayerType
@@ -52,9 +53,15 @@ public class M3_UIRoot : MonoBehaviour
             UIPrefab = M3_CommonHelper.GetUIPrefab(TargetUIType);
 
         if (UIPrefab == null)
+        {
+            Debug.LogWarning($"Cannot open UI {TargetUIType.ToString()}: Invalid prefab");
             return;
+        }
 
         GameObject TargetUI = Instantiate(UIPrefab);
+
+        RectTransform Rect = TargetUI.GetComponent<RectTransform>();
+        M3_CommonHelper.SetFullStretch(Rect);
 
         switch (Layer)
         {

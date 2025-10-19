@@ -59,7 +59,7 @@ public class M3_TextureManager : M3_Manager
         if (_TextureDict.ContainsKey(TextureId))
         {
             Debug.LogWarning($"[TextureManager] Duplicated texture: {TexturePath} Hash: {TextureId}");
-            return false;
+            return true;
         }
 
         if (!File.Exists(TexturePath))

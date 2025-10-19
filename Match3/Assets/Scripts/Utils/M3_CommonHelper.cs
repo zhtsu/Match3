@@ -1,10 +1,69 @@
-using Unity.VisualScripting.FullSerializer;
-using UnityEditor;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using XLua;
+
+public enum M3_ColorType
+{
+    None,
+    White,
+    Black,
+    Cyan,
+    HyperLink,
+}
 
 public class M3_CommonHelper
 {
+    public static Color GetCommonColor(M3_ColorType ColorType)
+    {
+        switch (ColorType)
+        {
+            case M3_ColorType.White:
+                {
+                    UnityEngine.ColorUtility.TryParseHtmlString("#EBE0D0", out Color White);
+                    return White;
+                }
+            case M3_ColorType.Black:
+                {
+                    ColorUtility.TryParseHtmlString("#262020", out Color Black);
+                    return Black;
+                }
+            case M3_ColorType.Cyan:
+                {
+                    ColorUtility.TryParseHtmlString("#F5F5E5", out Color Cyan);
+                    return Cyan;
+                }
+            case M3_ColorType.HyperLink:
+                {
+                    ColorUtility.TryParseHtmlString("#6ACCCB", out Color HyperLink);
+                    return HyperLink;
+                }
+        }
+
+        return Color.white;
+    }
+
+    public static void SetButtonTextColor(Button InButton, M3_ColorType ColorType)
+    {
+        if (InButton == null)
+            return;
+
+        TextMeshProUGUI[] ObjList = InButton.GetComponentsInChildren<TextMeshProUGUI>();
+        if (ObjList.Length == 0)
+            return;
+
+        TextMeshProUGUI TextObj = ObjList[0];
+        TextObj.color = GetCommonColor(ColorType);
+    }
+
+    public static void SetImageColor(Image InImage, M3_ColorType ColorType)
+    {
+        if (InImage == null)
+            return;
+
+        InImage.GetComponent<Image>().color = GetCommonColor(ColorType);
+    }
+
     public static M3_Gem SpawnGem(string ModId, string GemId)
     {
         M3_DataManager DataManager = M3_ManagerHub.Instance.DataManager;
@@ -25,17 +84,39 @@ public class M3_CommonHelper
         return null;
     }
 
+    public static void SetFullStretch(RectTransform TargetRectTransform)
+    {
+        TargetRectTransform.anchorMin = Vector2.zero;
+        TargetRectTransform.anchorMax = Vector2.one;
+
+        TargetRectTransform.offsetMin = Vector2.zero;
+        TargetRectTransform.offsetMax = Vector2.zero;
+
+        TargetRectTransform.pivot = new Vector2(0.5f, 0.5f);
+    }
+
     public static GameObject GetPrefab(M3_PrefabType PrefabType)
     {
         M3_DataManager DataManager = M3_ManagerHub.Instance.DataManager;
+        return M3_ManagerHub.Instance.PrefabManager.GetPrefab(PrefabType);
+    }
 
-        GameObject GemPrefab = M3_ManagerHub.Instance.PrefabManager.GetPrefab(PrefabType);
-        if (GemPrefab != null)
-        {
-            return GemPrefab;
-        }
+    public static string GetGameString(string Namespace, string LanguageCode, string StringId)
+    {
+        M3_DataManager DataManager = M3_ManagerHub.Instance.DataManager;
+        return DataManager.GetLocalString(Namespace, LanguageCode, StringId);
+    }
 
-        return null;
+    public static void OpenUI(M3_UIType TargetUIType, M3_UILayerType Layer = M3_UILayerType.Main)
+    {
+        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
+        UIManager.OpenUI(TargetUIType, Layer);
+    }
+
+    public static void CloseUI(M3_UIType TargetUIType)
+    {
+        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
+        UIManager.CloseUI(TargetUIType);
     }
 
     public static M3_PrefabType UITypeToPrefabType(M3_UIType UIType)
@@ -48,9 +129,13 @@ public class M3_CommonHelper
                 return M3_PrefabType.Mod;
             case M3_UIType.Config:
                 return M3_PrefabType.Config;
+            case M3_UIType.StoryView:
+                return M3_PrefabType.StoryView;
+            case M3_UIType.ModSelect:
+                return M3_PrefabType.ModSelect;
         }
 
-        return M3_PrefabType.Max;
+        return M3_PrefabType.None;
     }
 
     public static GameObject GetUIPrefab(M3_UIType UIType)
