@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -107,16 +108,34 @@ public class M3_CommonHelper
         return DataManager.GetLocalString(Namespace, LanguageCode, StringId);
     }
 
-    public static void OpenUI(M3_UIType TargetUIType, M3_UILayerType Layer = M3_UILayerType.Main)
+    public static void OpenUI(M3_UIType TargetUIType, M3_UIParams Params = null, M3_UILayerType Layer = M3_UILayerType.Main)
     {
         M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
-        UIManager.OpenUI(TargetUIType, Layer);
+        UIManager.OpenUI(TargetUIType, Params, Layer);
     }
 
     public static void CloseUI(M3_UIType TargetUIType)
     {
         M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
         UIManager.CloseUI(TargetUIType);
+    }
+
+    public static void ShowUI(M3_UIType TargetUIType)
+    {
+        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
+        UIManager.ShowUI(TargetUIType);
+    }
+
+    public static void HideUI(M3_UIType TargetUIType)
+    {
+        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
+        UIManager.HideUI(TargetUIType);
+    }
+
+    public static void CloseAllUI(M3_UIType TargetUIType)
+    {
+        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
+        UIManager.CloseAllUI();
     }
 
     public static M3_PrefabType UITypeToPrefabType(M3_UIType UIType)
@@ -164,7 +183,7 @@ public class M3_CommonHelper
         if (ScriptManager.GetScript(ScriptId, out LuaTable OutLuaTable))
         {
             OutLuaTable.Set("Self", SetToSelf);
-            OutLuaTable.Set("ModAPI", M3_GameController.Instance.MODAPI);
+            OutLuaTable.Set("ModAPI", M3_GameController.Instance.ModAPI);
         }
 
         return null;
@@ -181,5 +200,12 @@ public class M3_CommonHelper
         }
 
         return null;
+    }
+
+    public static void BindModApiToStory(Ink.Runtime.Story InStory)
+    {
+        Action StartMatch3 = M3_GameController.Instance.ModAPI.StartMatch3;
+
+        InStory.BindExternalFunction("StartMatch3", StartMatch3);
     }
 }

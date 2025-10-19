@@ -17,19 +17,66 @@ public class M3_UI_ModSelect : M3_UI
     private List<M3_ModCard> _ModCardList = new List<M3_ModCard>();
     private M3_ModData _SelectedModData;
 
+    private Tween _Tween;
+    private float _Duration = 0.2f;
+    private Ease _EaseType = Ease.OutQuad;
+
     private void Start()
     {
+        PlayOpenAnim();
+
         if (_BackButton != null)
-        {
             _BackButton.onClick.AddListener(OnBackButtonClicked);
-        }
+        if (_StartButton != null)
+            _StartButton.onClick.AddListener(OnStartButtonClicked);
 
         RefreshModList();
     }
 
+    private void PlayOpenAnim()
+    {
+        if (_Tween.isAlive) return;
+
+        CanvasGroup CG = GetComponent<CanvasGroup>();
+        CG.alpha = 0f;
+        CG.interactable = false;
+        CG.blocksRaycasts = false;
+
+        _Tween = Tween.Alpha(CG, 0f, 1f, _Duration, _EaseType)
+            .OnComplete(() =>
+            {
+                CG.interactable = true;
+                CG.blocksRaycasts = true;
+            });
+    }
+
+    private void PlayCloseAnim()
+    {
+        if (_Tween.isAlive) return;
+
+        CanvasGroup CG = GetComponent<CanvasGroup>();
+        CG.interactable = false;
+        CG.blocksRaycasts = false;
+
+        _Tween = Tween.Alpha(CG, 1f, 0f, _Duration, _EaseType)
+            .OnComplete(() =>
+            {
+                M3_CommonHelper.CloseUI(M3_UIType.ModSelect);
+            });
+    }
+
     private void OnBackButtonClicked()
     {
-        M3_CommonHelper.CloseUI(M3_UIType.ModSelect);
+        PlayCloseAnim();
+    }
+
+    private void OnStartButtonClicked()
+    {
+        M3_CommonHelper.CloseUI(M3_UIType.MainMenu);
+        M3_StoryViewUIParams UIParams = new M3_StoryViewUIParams();
+        UIParams.ModData = _SelectedModData;
+        M3_CommonHelper.OpenUI(M3_UIType.StoryView, UIParams);
+        PlayCloseAnim();
     }
 
     private void RefreshModList()

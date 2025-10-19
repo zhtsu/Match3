@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
-using static UnityEngine.GraphicsBuffer;
 
 public enum M3_UILayerType
 {
@@ -37,7 +35,7 @@ public class M3_UIRoot : MonoBehaviour
     {
     }
 
-    public void OpenUI(M3_UIType TargetUIType, M3_UILayerType Layer)
+    public void OpenUI(M3_UIType TargetUIType, M3_UIParams Params, M3_UILayerType Layer)
     {
         if (M3_GameController.Instance.GlobalData.IsGameReady == false &&
             TargetUIType != M3_UIType.LoadingScreen)
@@ -59,6 +57,9 @@ public class M3_UIRoot : MonoBehaviour
         }
 
         GameObject TargetUI = Instantiate(UIPrefab);
+
+        M3_UI UIComp = TargetUI.GetComponent<M3_UI>();
+        UIComp.SetParams(Params);
 
         RectTransform Rect = TargetUI.GetComponent<RectTransform>();
         M3_CommonHelper.SetFullStretch(Rect);
@@ -98,6 +99,42 @@ public class M3_UIRoot : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void ShowUI(M3_UIType TargetUIType)
+    {
+        foreach (GameObject Obj in _ActiveUIList)
+        {
+            M3_UI UIComponent = Obj.GetComponent<M3_UI>();
+            if (UIComponent != null && UIComponent.Type == TargetUIType)
+            {
+                Obj.SetActive(true);
+                break;
+            }
+        }
+    }
+
+    public void HideUI(M3_UIType TargetUIType)
+    {
+        foreach (GameObject Obj in _ActiveUIList)
+        {
+            M3_UI UIComponent = Obj.GetComponent<M3_UI>();
+            if (UIComponent != null && UIComponent.Type == TargetUIType)
+            {
+                Obj.SetActive(false);
+                break;
+            }
+        }
+    }
+
+    public void CloseAllUI()
+    {
+        foreach (GameObject Obj in _ActiveUIList)
+        {
+            Destroy(Obj);
+        }
+
+        _ActiveUIList.Clear();
     }
 
     public bool IsUIActive(M3_UIType CheckedUIType)

@@ -20,11 +20,11 @@ public class M3_UIManager : M3_Manager
 
     }
 
-    public void OpenUI(M3_UIType TargetUIType, M3_UILayerType Layer = M3_UILayerType.Main)
+    public void OpenUI(M3_UIType TargetUIType, M3_UIParams Params = null, M3_UILayerType Layer = M3_UILayerType.Main)
     {
         if (_UIRoot != null)
         {
-            _UIRoot.OpenUI(TargetUIType, Layer);
+            _UIRoot.OpenUI(TargetUIType, Params, Layer);
         }
         else
         {
@@ -37,6 +37,42 @@ public class M3_UIManager : M3_Manager
         if (_UIRoot != null)
         {
             _UIRoot.CloseUI(TargetUIType);
+        }
+        else
+        {
+            throw new Exception("UIRoot is not found in the scene.");
+        }
+    }
+
+    public void ShowUI(M3_UIType TargetUIType)
+    {
+        if (_UIRoot != null)
+        {
+            _UIRoot.ShowUI(TargetUIType);
+        }
+        else
+        {
+            throw new Exception("UIRoot is not found in the scene.");
+        }
+    }
+
+    public void HideUI(M3_UIType TargetUIType)
+    {
+        if (_UIRoot != null)
+        {
+            _UIRoot.HideUI(TargetUIType);
+        }
+        else
+        {
+            throw new Exception("UIRoot is not found in the scene.");
+        }
+    }
+
+    public void CloseAllUI()
+    {
+        if (_UIRoot != null)
+        {
+            _UIRoot.CloseAllUI();
         }
         else
         {

@@ -17,12 +17,12 @@ public class M3_GameController : MonoBehaviour
 
     private static M3_GameController _Instance;
     private M3_GlobalData _GlobalData;
-    private M3_ModAPI _MODAPI = new M3_ModAPI();
+    private M3_ModAPI _ModAPI = new M3_ModAPI();
 
     public static M3_GameController Instance { get { return _Instance; } }
     public M3_GameConfig GameConfig { get { return _GameConfig; } }
     public M3_GlobalData GlobalData { get { return _GlobalData; } }
-    public M3_ModAPI MODAPI { get { return _MODAPI; } }
+    public M3_ModAPI ModAPI { get { return _ModAPI; } }
 
     private void Awake()
     {
@@ -53,9 +53,14 @@ public class M3_GameController : MonoBehaviour
         M3_UIRoot UIRoot = Object.FindFirstObjectByType<M3_UIRoot>();
         if (UIRoot != null)
         {
-            UIRoot.OpenUI(M3_UIType.LoadingScreen, M3_UILayerType.Top);
+            M3_LoadingScreenUIParams UIParams = new M3_LoadingScreenUIParams();
+            UIParams.OnStartLoading += StartLoading;
+            UIRoot.OpenUI(M3_UIType.LoadingScreen, UIParams, M3_UILayerType.Top);
         }
+    }
 
+    private void StartLoading()
+    {
         M3_EventBus.Subscribe<M3_Event_GameReady>(OnGameReady);
         M3_EventBus.Subscribe<M3_Event_ManagerHubReady>(OnManagerHubReady);
         M3_EventBus.Subscribe<M3_Event_TexturesLoadCompleted>(OnTexturesLoadCompleted);
@@ -115,9 +120,9 @@ public class M3_GameController : MonoBehaviour
         Debug.Log("Game Ready");
         M3_EventBus.Unsubscribe<M3_Event_GameReady>(OnGameReady);
 
-        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
-        UIManager.CloseUI(M3_UIType.LoadingScreen);
-        UIManager.OpenUI(M3_UIType.MainMenu);
+        M3_CommonHelper.OpenUI(M3_UIType.MainMenu);
+
+        M3_EventBus.SendEvent<M3_Event_LoadingCompleted>();
 
         Test();
     }
@@ -156,35 +161,35 @@ public class M3_GameController : MonoBehaviour
 
     void Test()
     {
-        M3_Grid Grid = FindObjectOfType<M3_Grid>();
-        Grid.Initialize(3, 3, 1f);
-        Grid.GenerateGrid();
+        //M3_Grid Grid = FindObjectOfType<M3_Grid>();
+        //Grid.Initialize(3, 3, 1f);
+        //Grid.GenerateGrid();
 
-        M3_Gem elephant = M3_CommonHelper.SpawnGem("animals", "elephant_gem");
-        Grid.AddCell(elephant, 0, 0, M3_FillMode.AspectFit);
+        //M3_Gem elephant = M3_CommonHelper.SpawnGem("animals", "elephant_gem");
+        //Grid.AddCell(elephant, 0, 0, M3_FillMode.AspectFit);
 
-        M3_Gem giraffe = M3_CommonHelper.SpawnGem("animals", "giraffe_gem");
-        Grid.AddCell(giraffe, 0, 1, M3_FillMode.AspectFit);
+        //M3_Gem giraffe = M3_CommonHelper.SpawnGem("animals", "giraffe_gem");
+        //Grid.AddCell(giraffe, 0, 1, M3_FillMode.AspectFit);
 
-        M3_Gem hippo = M3_CommonHelper.SpawnGem("animals", "hippo_gem");
-        Grid.AddCell(hippo, 0, 2, M3_FillMode.AspectFit);
+        //M3_Gem hippo = M3_CommonHelper.SpawnGem("animals", "hippo_gem");
+        //Grid.AddCell(hippo, 0, 2, M3_FillMode.AspectFit);
 
-        M3_Gem monkey = M3_CommonHelper.SpawnGem("animals", "monkey_gem");
-        Grid.AddCell(monkey, 1, 0, M3_FillMode.AspectFit);
+        //M3_Gem monkey = M3_CommonHelper.SpawnGem("animals", "monkey_gem");
+        //Grid.AddCell(monkey, 1, 0, M3_FillMode.AspectFit);
 
-        M3_Gem panda = M3_CommonHelper.SpawnGem("animals", "panda_gem");
-        Grid.AddCell(panda, 1, 1, M3_FillMode.AspectFit);
+        //M3_Gem panda = M3_CommonHelper.SpawnGem("animals", "panda_gem");
+        //Grid.AddCell(panda, 1, 1, M3_FillMode.AspectFit);
 
-        M3_Gem parrot = M3_CommonHelper.SpawnGem("animals", "parrot_gem");
-        Grid.AddCell(parrot, 1, 2, M3_FillMode.AspectFit);
+        //M3_Gem parrot = M3_CommonHelper.SpawnGem("animals", "parrot_gem");
+        //Grid.AddCell(parrot, 1, 2, M3_FillMode.AspectFit);
 
-        M3_Gem penguin = M3_CommonHelper.SpawnGem("animals", "penguin_gem");
-        Grid.AddCell(penguin, 2, 0, M3_FillMode.AspectFit);
+        //M3_Gem penguin = M3_CommonHelper.SpawnGem("animals", "penguin_gem");
+        //Grid.AddCell(penguin, 2, 0, M3_FillMode.AspectFit);
 
-        M3_Gem pig = M3_CommonHelper.SpawnGem("animals", "pig_gem");
-        Grid.AddCell(pig, 2, 1, M3_FillMode.AspectFit);
+        //M3_Gem pig = M3_CommonHelper.SpawnGem("animals", "pig_gem");
+        //Grid.AddCell(pig, 2, 1, M3_FillMode.AspectFit);
 
-        M3_Gem rabbit = M3_CommonHelper.SpawnGem("animals", "rabbit_gem");
-        Grid.AddCell(rabbit, 2, 2, M3_FillMode.AspectFit);
+        //M3_Gem rabbit = M3_CommonHelper.SpawnGem("animals", "rabbit_gem");
+        //Grid.AddCell(rabbit, 2, 2, M3_FillMode.AspectFit);
     }
 }

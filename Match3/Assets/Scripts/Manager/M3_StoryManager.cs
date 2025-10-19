@@ -98,6 +98,8 @@ public class M3_StoryManager : M3_Manager
             Debug.LogError(Ex);
         }
         
+        M3_CommonHelper.BindModApiToStory(NewStory);
+
         _StoryDict[StoryId] = NewStory;
         return true;
     }
