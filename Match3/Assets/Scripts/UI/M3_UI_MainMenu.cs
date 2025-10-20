@@ -12,9 +12,6 @@ public class M3_UI_MainMenu : M3_UI
     private Button _StartButton;
 
     [SerializeField]
-    private Button _ModButton;
-
-    [SerializeField]
     private Button _ConfigButton;
 
     [SerializeField]
@@ -71,26 +68,14 @@ public class M3_UI_MainMenu : M3_UI
     {
         SetReleaseEffect(_StartButton);
 
-        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
-        UIManager.OpenUI(M3_UIType.ModSelect);
-    }
+        M3_CommonHelper.CloseUI(M3_UIType.MainMenu);
+        M3_StoryViewUIParams UIParams = new M3_StoryViewUIParams();
+        M3_ManagerHub.Instance.DataManager.GetModData("default", out M3_ModData ModData);
+        UIParams.ModData = ModData;
+        M3_CommonHelper.OpenUI(M3_UIType.StoryView, UIParams);
 
-    public void OnModButtonHover()
-    {
-        SetHoverEffect(_ModButton);
-    }
-
-    public void OnModButtonPress()
-    {
-        SetPressEffect(_ModButton);
-    }
-
-    public void OnModButtonRelease()
-    {
-        SetReleaseEffect(_ModButton);
-
-        M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
-        UIManager.OpenUI(M3_UIType.Mod);
+        //M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
+        //UIManager.OpenUI(M3_UIType.ModSelect);
     }
 
     public void OnConfigButtonHover()

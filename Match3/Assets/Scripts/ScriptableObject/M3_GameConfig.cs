@@ -8,10 +8,6 @@ public class M3_GameConfig : ScriptableObject
     public GameObject UIRootPrefab { get { return _UIRootPrefab; } }
 
     [SerializeField]
-    private M3_PrefabType[] _PrefabTypeList;
-    public M3_PrefabType[] PrefabTypeList { get { return _PrefabTypeList; } }
-
-    [SerializeField]
     private string[] _PrefabAddressList;
     public string[] PrefabAddressList { get { return _PrefabAddressList; } }
 

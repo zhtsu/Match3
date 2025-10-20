@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -11,19 +12,31 @@ public class M3_HyperlinkButton : M3_UIComponent
     [SerializeField]
     private TextMeshProUGUI _Text;
 
-    public void OnMouseHoverEvent()
+    private string _ChoosePath;
+
+    public void SetText(string Str)
     {
         if (_Text != null)
         {
-            _Text.fontStyle = FontStyles.Underline;
+            _Text.text = Str;
         }
     }
 
-    public void OnMouseLeaveEvent()
+    public void SetChoosePath(string ChoosePath)
     {
-        if (_Text != null)
+        _ChoosePath = ChoosePath;
+    }
+
+    public string GetChoosePath()
+    {
+        return _ChoosePath;
+    }
+
+    public void SetButtonClickAction(Action<string> Func)
+    {
+        if (_Button != null)
         {
-            _Text.fontStyle = FontStyles.Normal;
+            _Button.onClick.AddListener(() => { Func?.Invoke(_ChoosePath); });
         }
     }
 }

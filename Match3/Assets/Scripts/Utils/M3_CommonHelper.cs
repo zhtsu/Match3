@@ -69,7 +69,7 @@ public class M3_CommonHelper
     {
         M3_DataManager DataManager = M3_ManagerHub.Instance.DataManager;
 
-        GameObject GemPrefab = M3_ManagerHub.Instance.PrefabManager.GetPrefab(M3_PrefabType.Gem);
+        GameObject GemPrefab = M3_ManagerHub.Instance.PrefabManager.GetPrefab("Gem");
         if (GemPrefab != null)
         {
             M3_Gem Gem = GameObject.Instantiate(GemPrefab).GetComponent<M3_Gem>();
@@ -96,10 +96,10 @@ public class M3_CommonHelper
         TargetRectTransform.pivot = new Vector2(0.5f, 0.5f);
     }
 
-    public static GameObject GetPrefab(M3_PrefabType PrefabType)
+    public static GameObject GetPrefab(string Address)
     {
         M3_DataManager DataManager = M3_ManagerHub.Instance.DataManager;
-        return M3_ManagerHub.Instance.PrefabManager.GetPrefab(PrefabType);
+        return M3_ManagerHub.Instance.PrefabManager.GetPrefab(Address);
     }
 
     public static string GetGameString(string Namespace, string LanguageCode, string StringId)
@@ -132,34 +132,34 @@ public class M3_CommonHelper
         UIManager.HideUI(TargetUIType);
     }
 
-    public static void CloseAllUI(M3_UIType TargetUIType)
+    public static void CloseAllUI()
     {
         M3_UIManager UIManager = M3_ManagerHub.Instance.UIManager;
         UIManager.CloseAllUI();
     }
 
-    public static M3_PrefabType UITypeToPrefabType(M3_UIType UIType)
+    public static string UITypeToPrefabAddress(M3_UIType UIType)
     {
         switch (UIType)
         {
             case M3_UIType.MainMenu:
-                return M3_PrefabType.MainMenu;
+                return "MainMenu";
             case M3_UIType.Mod:
-                return M3_PrefabType.Mod;
+                return "Mod";
             case M3_UIType.Config:
-                return M3_PrefabType.Config;
+                return "Config";
             case M3_UIType.StoryView:
-                return M3_PrefabType.StoryView;
+                return "StoryView";
             case M3_UIType.ModSelect:
-                return M3_PrefabType.ModSelect;
+                return "ModSelect";
         }
 
-        return M3_PrefabType.None;
+        return null;
     }
 
     public static GameObject GetUIPrefab(M3_UIType UIType)
     {
-        return GetPrefab(UITypeToPrefabType(UIType));
+        return GetPrefab(UITypeToPrefabAddress(UIType));
     }
 
     public static Ink.Runtime.Story GetStory(string StoryPath)

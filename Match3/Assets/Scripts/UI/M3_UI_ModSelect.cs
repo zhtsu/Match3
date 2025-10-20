@@ -121,7 +121,7 @@ public class M3_UI_ModSelect : M3_UI
     {
         M3_DataManager DataManager = M3_ManagerHub.Instance.DataManager;
 
-        GameObject ModCardPrefab = M3_ManagerHub.Instance.PrefabManager.GetPrefab(M3_PrefabType.ModCard);
+        GameObject ModCardPrefab = M3_ManagerHub.Instance.PrefabManager.GetPrefab("ModCard");
         if (ModCardPrefab != null)
         {
             M3_ModCard ModCard = GameObject.Instantiate(ModCardPrefab).GetComponent<M3_ModCard>();

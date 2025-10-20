@@ -4,20 +4,6 @@ using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using System.Collections.Generic;
 
-public enum M3_PrefabType
-{
-    None = 0,
-    Gem,
-    MainMenu,
-    InGameHUD,
-    PauseMenu,
-    Config,
-    Mod,
-    StoryView,
-    ModSelect,
-    ModCard,
-}
-
 public class M3_PrefabManager : M3_Manager
 {
     public override string ManagerName
@@ -25,20 +11,17 @@ public class M3_PrefabManager : M3_Manager
         get { return "Prefab Manager"; }
     }
 
-    private Dictionary<M3_PrefabType, AsyncOperationHandle<GameObject>> _PrefabHandleDict = new Dictionary<M3_PrefabType, AsyncOperationHandle<GameObject>>();
+    private Dictionary<Hash128, AsyncOperationHandle<GameObject>> _PrefabHandleDict = new Dictionary<Hash128, AsyncOperationHandle<GameObject>>();
 
     public override void Initialize()
     {
-        for (int i = 0; i < M3_GameController.Instance.GameConfig.PrefabTypeList.Length; i++)
+        foreach (string Address in M3_GameController.Instance.GameConfig.PrefabAddressList)
         {
-            M3_PrefabType PrefabType = M3_GameController.Instance.GameConfig.PrefabTypeList[i];
-            string Address = M3_GameController.Instance.GameConfig.PrefabAddressList[i];
-
             if (string.IsNullOrEmpty(Address) == false)
             {
                 AsyncOperationHandle<GameObject> Handle = Addressables.LoadAssetAsync<GameObject>(Address);
                 Handle.Completed += OnPrefabLoaded;
-                _PrefabHandleDict.Add(PrefabType, Handle);
+                _PrefabHandleDict.Add(Hash128.Compute(Address), Handle);
             }
         }
     }
@@ -53,9 +36,9 @@ public class M3_PrefabManager : M3_Manager
         _PrefabHandleDict.Clear();
     }
 
-    public GameObject GetPrefab(M3_PrefabType PrefabType)
+    public GameObject GetPrefab(string Address)
     {
-        if (_PrefabHandleDict.TryGetValue(PrefabType, out AsyncOperationHandle<GameObject> OutHandle))
+        if (_PrefabHandleDict.TryGetValue(Hash128.Compute(Address), out AsyncOperationHandle<GameObject> OutHandle))
         {
             return OutHandle.Result;
         }

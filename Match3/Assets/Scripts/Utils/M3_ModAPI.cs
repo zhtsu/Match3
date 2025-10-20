@@ -6,6 +6,8 @@ public class M3_ModAPI
 {
     public void StartMatch3()
     {
-        M3_CommonHelper.OpenUI(M3_UIType.Config);
+        M3_CommonHelper.CloseAllUI();
+
+
     }
 }
