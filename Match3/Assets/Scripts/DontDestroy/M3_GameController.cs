@@ -5,6 +5,7 @@ using UnityEngine;
 public enum M3_GameState
 {
     None = 0,
+    Loading,
     MainMenu,
     InGame,
     Paused,
@@ -23,6 +24,8 @@ public class M3_GameController : MonoBehaviour
     public M3_GameConfig GameConfig { get { return _GameConfig; } }
     public M3_GlobalData GlobalData { get { return _GlobalData; } }
     public M3_ModAPI ModAPI { get { return _ModAPI; } }
+    public M3_Gem CurrentClickedGem { get { return _GlobalData.CurrentClickedGem; } }
+    public bool IsAllowInput { get { return _GlobalData.IsAllowInput; } }
 
     private void Awake()
     {
@@ -37,6 +40,10 @@ public class M3_GameController : MonoBehaviour
         _GlobalData.IsTexturesLoadCompleted = false;
         _GlobalData.IsScriptsLoadCompleted = false;
         _GlobalData.IsStoriesLoadCompleted = false;
+        _GlobalData.IsAllowInput = true;
+
+        _GlobalData.CurrentM3Battle = null;
+        _GlobalData.CurrentGameState = M3_GameState.Loading;
 
         _Instance = this;
     }
@@ -87,6 +94,7 @@ public class M3_GameController : MonoBehaviour
             if (CheckGameReady())
             {
                 _GlobalData.IsGameReady = true;
+                _GlobalData.CurrentGameState = M3_GameState.MainMenu;
                 M3_EventBus.SendEvent(new M3_Event_GameReady());
             }
         }
@@ -107,6 +115,11 @@ public class M3_GameController : MonoBehaviour
         _GlobalData.MouseDragDirection = Direction;
     }
 
+    public void SetCurrentM3Battle(M3_Match3Battle M3Battle)
+    {
+        _GlobalData.CurrentM3Battle = M3Battle;
+    }
+
     private void OnManagerHubReady(M3_Event_ManagerHubReady Event)
     {
         Debug.Log("Manager Hub Ready");
@@ -123,8 +136,6 @@ public class M3_GameController : MonoBehaviour
         M3_CommonHelper.OpenUI(M3_UIType.MainMenu);
 
         M3_EventBus.SendEvent<M3_Event_LoadingCompleted>();
-
-        Test();
     }
 
     private void OnTexturesLoadCompleted(M3_Event_TexturesLoadCompleted Event)
@@ -159,37 +170,13 @@ public class M3_GameController : MonoBehaviour
         _GlobalData.IsStoriesLoadCompleted = true;
     }
 
-    void Test()
+    public void SetCurrentClickedGem(M3_Gem ClickedGem)
     {
-        //M3_Grid Grid = FindObjectOfType<M3_Grid>();
-        //Grid.Initialize(3, 3, 1f);
-        //Grid.GenerateGrid();
+        _GlobalData.CurrentClickedGem = ClickedGem;
+    }
 
-        //M3_Gem elephant = M3_CommonHelper.SpawnGem("animals", "elephant_gem");
-        //Grid.AddCell(elephant, 0, 0, M3_FillMode.AspectFit);
-
-        //M3_Gem giraffe = M3_CommonHelper.SpawnGem("animals", "giraffe_gem");
-        //Grid.AddCell(giraffe, 0, 1, M3_FillMode.AspectFit);
-
-        //M3_Gem hippo = M3_CommonHelper.SpawnGem("animals", "hippo_gem");
-        //Grid.AddCell(hippo, 0, 2, M3_FillMode.AspectFit);
-
-        //M3_Gem monkey = M3_CommonHelper.SpawnGem("animals", "monkey_gem");
-        //Grid.AddCell(monkey, 1, 0, M3_FillMode.AspectFit);
-
-        //M3_Gem panda = M3_CommonHelper.SpawnGem("animals", "panda_gem");
-        //Grid.AddCell(panda, 1, 1, M3_FillMode.AspectFit);
-
-        //M3_Gem parrot = M3_CommonHelper.SpawnGem("animals", "parrot_gem");
-        //Grid.AddCell(parrot, 1, 2, M3_FillMode.AspectFit);
-
-        //M3_Gem penguin = M3_CommonHelper.SpawnGem("animals", "penguin_gem");
-        //Grid.AddCell(penguin, 2, 0, M3_FillMode.AspectFit);
-
-        //M3_Gem pig = M3_CommonHelper.SpawnGem("animals", "pig_gem");
-        //Grid.AddCell(pig, 2, 1, M3_FillMode.AspectFit);
-
-        //M3_Gem rabbit = M3_CommonHelper.SpawnGem("animals", "rabbit_gem");
-        //Grid.AddCell(rabbit, 2, 2, M3_FillMode.AspectFit);
+    public void SetAllowInput(bool IsAllow)
+    {
+        _GlobalData.IsAllowInput = IsAllow;
     }
 }

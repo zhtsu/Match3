@@ -27,11 +27,6 @@ public class M3_ModCard : M3_UIComponent
             string ModNameStr = M3_CommonHelper.GetGameString(ModData.Id, "zh", ModData.Name);
             _ModNameText.text = ModNameStr;
         }
-
-        if (_CoverImage != null)
-        {
-            _CoverImage.sprite = M3_CommonHelper.GetSprite(ModData.CoverImage);
-        }
     }
 
     public void SetButtonClickAction(UnityEngine.Events.UnityAction InAction)

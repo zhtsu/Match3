@@ -11,6 +11,5 @@ public struct M3_ModData
     public string[] TileList;
     public string[] UnitList;
     public string[] LocaleList;
-    public string CoverImage;
     public string MainInkFile;
 }

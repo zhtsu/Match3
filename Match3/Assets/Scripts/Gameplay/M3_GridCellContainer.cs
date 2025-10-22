@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using PrimeTween;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public enum M3_FillMode
 {
@@ -14,9 +11,20 @@ public enum M3_FillMode
 
 public class M3_GridCellContainer : MonoBehaviour
 {
+    [SerializeField]
+    GameObject _TileArea;
+
+    [SerializeField]
+    GameObject _CellArea;
+
     private float _Width = 0;
     private float _Height = 0;
-    private M3_IGridCell _GridCell;
+    private M3_IGridCell _GemCell;
+    private M3_IGridCell _TileCell;
+    private Color _SavedTileColor;
+    private Sequence _Sequence;
+    public M3_Grid ParentGrid { get; set; }
+    public Vector2Int GridCoords { get; set; }
 
     public void Initialize(float Width, float Height)
     {
@@ -24,40 +32,123 @@ public class M3_GridCellContainer : MonoBehaviour
         _Height = Height;
     }
 
-    public void AddCell(M3_IGridCell GridCell, M3_FillMode FillMode = M3_FillMode.None)
+    public void AddTile(M3_IGridCell GridCell, M3_FillMode FillMode = M3_FillMode.None)
     {
-        _GridCell = GridCell;
+        _TileCell = GridCell;
 
-        if (_GridCell != null)
+        M3_Tile Tile = GridCell as M3_Tile;
+        if (Tile != null)
         {
-            Transform CellTransform = ((MonoBehaviour)_GridCell).transform;
-            CellTransform.SetParent(transform);
+            int sum = GridCoords.x + GridCoords.y;
+            if (sum % 2 == 0)
+                Tile.GetComponent<SpriteRenderer>().color = M3_CommonHelper.GetCommonColor(M3_ColorType.TileWhite);
+            else
+                Tile.GetComponent<SpriteRenderer>().color = M3_CommonHelper.GetCommonColor(M3_ColorType.TileBlack);
+
+            _SavedTileColor = Tile.GetComponent<SpriteRenderer>().color;
+        }
+
+        if (_TileCell != null)
+        {
+            _TileCell.ParentContainer = this;
+
+            Transform TileTransform = ((MonoBehaviour)_TileCell).transform;
+            TileTransform.SetParent(_TileArea.transform);
+
+            TileTransform.localPosition = Vector3.zero;
+            TileTransform.localRotation = Quaternion.identity;
+
+            Vector3 BakedLocalScale = TileTransform.localScale;
+            TileTransform.localScale = Vector3.one;
+
+            Bounds bounds = TileTransform.GetComponent<Renderer>().bounds;
+            TileTransform.localScale = CalFillScale(FillMode, bounds, BakedLocalScale, 0.0f);
+        }
+    }
+
+    public void AddCell(M3_IGridCell GridCell, M3_FillMode FillMode = M3_FillMode.None, bool ScaleFollowParent = true, bool WithAnim = false)
+    {
+        _GemCell = GridCell;
+
+        if (_GemCell != null)
+        {
+            _GemCell.ParentContainer = this;
+
+            Transform CellTransform = ((MonoBehaviour)_GemCell).transform;
+            CellTransform.SetParent(_CellArea.transform);
 
             CellTransform.localPosition = Vector3.zero;
             CellTransform.localRotation = Quaternion.identity;
 
-            Vector3 BakedLocalScale = CellTransform.localScale;
+            Vector3 BakedLocalScale = ScaleFollowParent ? CellTransform.localScale : Vector3.one;
             CellTransform.localScale = Vector3.one;
 
             Bounds bounds = CellTransform.GetComponent<Renderer>().bounds;
-            CellTransform.localScale = CalFillScale(FillMode, bounds, BakedLocalScale);
+            CellTransform.localScale = CalFillScale(FillMode, bounds, BakedLocalScale, 0.1f);
+
+            M3_Gem Gem = _GemCell as M3_Gem;
+            if (Gem != null)
+                Gem.SetSavedScale(CellTransform.localScale);
+
+            if (WithAnim)
+            {
+                const float FallOffset = 200f;
+                const float Duration = 0.3f;
+
+                Vector3 StartPosition = new Vector3(0f, FallOffset, 0f);
+                CellTransform.localPosition = StartPosition;
+
+                Tween.LocalPosition(CellTransform, Vector3.zero, Duration, Ease.OutQuad);
+            }
         }
     }
 
-    public M3_IGridCell GetCell()
+    public M3_IGridCell GetTileCell()
     {
-        return _GridCell;
+        return _TileCell;
     }
 
-    public void ClearCell()
+    public M3_IGridCell GetGemCell()
     {
-        _GridCell = null;
+        return _GemCell;
     }
 
-    private Vector3 CalFillScale(M3_FillMode FillMode, Bounds InBounds, Vector3 BakedScale)
+    public void RemoveGemCell()
+    {
+        _Sequence.Stop();
+        Tween Tw1 = Tween.Scale(((MonoBehaviour)_GemCell).transform, 1.2f, 0.5f, Ease.InQuad);
+        Tween Tw2 = Tween.Scale(((MonoBehaviour)_GemCell).transform, 0.0f, 0.25f, Ease.InQuad);
+        _Sequence = Sequence.Create()
+            .Chain(Tw1)
+            .Chain(Tw2)
+            .ChainCallback(() =>
+            {
+                RemoveGemCell_Internal();
+            });
+    }
+
+    private void RemoveGemCell_Internal()
+    {
+        M3_GameController.Instance.SetAllowInput(true);
+
+        ResetTileColor();
+
+        if (_GemCell != null)
+        {
+            M3_Gem Gem = ((M3_Gem)_GemCell);
+            Gem.transform.parent = null;
+            Gem.DestroySelf();
+            _GemCell = null;
+        }
+    }
+
+    private Vector3 CalFillScale(M3_FillMode FillMode, Bounds InBounds, Vector3 BakedScale, float Padding = 0.0f)
     {
         if (InBounds.size.x == 0 || InBounds.size.y == 0 || InBounds.size.z == 0)
             return Vector3.one;
+
+        float Width = _Width - Padding * 2;
+        float Height = _Height - Padding * 2;
 
         float OutputScaleX;
         float OutputScaleY;
@@ -66,15 +157,15 @@ public class M3_GridCellContainer : MonoBehaviour
         {
             case M3_FillMode.ScaleFill:
                 {
-                    OutputScaleX = _Width / InBounds.size.x;
-                    OutputScaleY = _Height / InBounds.size.y;
+                    OutputScaleX = Width / InBounds.size.x;
+                    OutputScaleY = Height / InBounds.size.y;
 
                     break;
                 }
             case M3_FillMode.AspectFill:
                 {
-                    float ScaleX = (_Width / (InBounds.size.x * BakedScale.x));
-                    float ScaleY = (_Height / (InBounds.size.y * BakedScale.y));
+                    float ScaleX = (Width / (InBounds.size.x * BakedScale.x));
+                    float ScaleY = (Height / (InBounds.size.y * BakedScale.y));
 
                     OutputScaleX = Mathf.Max(ScaleX, ScaleY) * BakedScale.x;
                     OutputScaleY = Mathf.Max(ScaleX, ScaleY) * BakedScale.y;
@@ -83,8 +174,8 @@ public class M3_GridCellContainer : MonoBehaviour
                 }
             case M3_FillMode.AspectFit:
                 {
-                    float ScaleX = (_Width / InBounds.size.x);
-                    float ScaleY = (_Height / InBounds.size.y);
+                    float ScaleX = (Width / InBounds.size.x);
+                    float ScaleY = (Height / InBounds.size.y);
 
                     OutputScaleX = Mathf.Min(ScaleX, ScaleY) * BakedScale.x;
                     OutputScaleY = Mathf.Min(ScaleX, ScaleY) * BakedScale.y;
@@ -102,5 +193,29 @@ public class M3_GridCellContainer : MonoBehaviour
         }
 
         return new Vector3(OutputScaleX, OutputScaleY, 1);
+    }
+
+    public void SetTileColor(int X, int Y, Color InColor)
+    {
+        if (_TileCell != null)
+        {
+            M3_Tile Tile = _TileCell as M3_Tile;
+            if (Tile != null)
+            {
+                Tile.GetComponent<SpriteRenderer>().color = InColor;
+            }
+        }
+    }
+
+    public void ResetTileColor()
+    {
+        if (_TileCell != null)
+        {
+            M3_Tile Tile = _TileCell as M3_Tile;
+            if (Tile != null)
+            {
+                Tile.GetComponent<SpriteRenderer>().color = _SavedTileColor;
+            }
+        }
     }
 }

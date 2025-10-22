@@ -18,5 +18,8 @@ public struct M3_GlobalData
     public bool IsTexturesLoadCompleted;
     public bool IsScriptsLoadCompleted;
     public bool IsStoriesLoadCompleted;
+    public bool IsAllowInput;
     public M3_GameState CurrentGameState;
+    public M3_Match3Battle CurrentM3Battle;
+    public M3_Gem CurrentClickedGem;
 };

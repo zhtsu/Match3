@@ -9,10 +9,15 @@ public class M3_Unit : MonoBehaviour
     private string _PlayingAnimName = null;
     private string _DefaultAnimName = "Idle";
     private LuaTable _ActionScript = null;
+    private string _UnitId;
+
+    public Hash128 UnitId { get { return Hash128.Compute(_UnitId); } }
 
     public void SetUnitData(M3_UnitData UnitData)
     {
         _AnimTable.Clear();
+
+        _UnitId = UnitData.Id;
 
         foreach (string AnimName in UnitData.AnimationTable.Keys)
         {

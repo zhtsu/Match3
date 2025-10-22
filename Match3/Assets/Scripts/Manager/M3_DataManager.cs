@@ -34,11 +34,16 @@ public class M3_DataManager : M3_Manager
     // Unit Data
     //
 
-    public bool GetUnitData(string ModId, string TileId, out M3_UnitData OutUnitData)
+    public List<M3_UnitData> GetUnitDataList()
+    {
+        return _UnitDataList;
+    }
+
+    public bool GetUnitData(string ModId, string UnitId, out M3_UnitData OutUnitData)
     {
         foreach (M3_UnitData UnitData in _UnitDataList)
         {
-            if (UnitData.BelongingModId == ModId && UnitData.Id == TileId)
+            if (UnitData.BelongingModId == ModId && UnitData.Id == UnitId)
             {
                 OutUnitData = UnitData;
                 return true;
@@ -288,11 +293,6 @@ public class M3_DataManager : M3_Manager
     private void LoadTextureData()
     {
         List<string> TexturePathList = new List<string>();
-
-        foreach (M3_ModData ModData in _ModDataList)
-        {
-            TexturePathList.Add(M3_PathHelper.GetModSubfilePath(ModData.CoverImage));
-        }
 
         foreach (M3_UnitData UnitData in _UnitDataList)
         {

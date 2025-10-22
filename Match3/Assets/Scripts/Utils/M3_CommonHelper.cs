@@ -1,4 +1,6 @@
+using Ink.Parsed;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +13,8 @@ public enum M3_ColorType
     Black,
     Cyan,
     HyperLink,
+    TileWhite,
+    TileBlack,
 }
 
 public class M3_CommonHelper
@@ -39,6 +43,16 @@ public class M3_CommonHelper
                     ColorUtility.TryParseHtmlString("#6ACCCB", out Color HyperLink);
                     return HyperLink;
                 }
+            case M3_ColorType.TileWhite:
+                {
+                    ColorUtility.TryParseHtmlString("#3A3434", out Color Col);
+                    return Col;
+                }
+            case M3_ColorType.TileBlack:
+                {
+                    ColorUtility.TryParseHtmlString("#332C2C", out Color Col);
+                    return Col;
+                }
         }
 
         return Color.white;
@@ -63,6 +77,21 @@ public class M3_CommonHelper
             return;
 
         InImage.GetComponent<Image>().color = GetCommonColor(ColorType);
+    }
+
+    public static M3_Tile SpawnTile()
+    {
+        M3_DataManager DataManager = M3_ManagerHub.Instance.DataManager;
+
+        GameObject TilePrefab = M3_ManagerHub.Instance.PrefabManager.GetPrefab("Tile");
+        if (TilePrefab != null)
+        {
+            M3_Tile Tile = GameObject.Instantiate(TilePrefab).GetComponent<M3_Tile>();
+
+            return Tile;
+        }
+
+        return null;
     }
 
     public static M3_Gem SpawnGem(string ModId, string GemId)
@@ -179,11 +208,13 @@ public class M3_CommonHelper
     {
         M3_ScriptManager ScriptManager = M3_ManagerHub.Instance.ScriptManager;
 
-        Hash128 ScriptId = M3_PathHelper.GetHash(ScriptPath);
+        Hash128 ScriptId = M3_PathHelper.GetHash(M3_PathHelper.GetModSubfilePath(ScriptPath));
         if (ScriptManager.GetScript(ScriptId, out LuaTable OutLuaTable))
         {
             OutLuaTable.Set("Self", SetToSelf);
             OutLuaTable.Set("ModAPI", M3_GameController.Instance.ModAPI);
+
+            return OutLuaTable;
         }
 
         return null;
@@ -207,5 +238,17 @@ public class M3_CommonHelper
         Action StartMatch3 = M3_GameController.Instance.ModAPI.StartMatch3;
 
         InStory.BindExternalFunction("StartMatch3", StartMatch3);
+    }
+
+    public static M3_UnitData GetRandomGemData()
+    {
+        M3_DataManager DataManager = M3_ManagerHub.Instance.DataManager;
+        
+        List<M3_UnitData> UnitDataList = DataManager.GetUnitDataList();
+        if (UnitDataList.Count == 0)
+            return new M3_UnitData();
+
+        int RandomIndex = UnityEngine.Random.Range(0, UnitDataList.Count);
+        return UnitDataList[RandomIndex];
     }
 }
