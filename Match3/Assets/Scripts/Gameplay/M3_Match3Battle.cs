@@ -5,9 +5,12 @@ using UnityEngine;
 public class M3_Match3Battle
 {
     private M3_Grid _Grid;
+    private M3_AIController _AIController;
 
     public void StartBattle(M3_LevelData LevelData)
     {
+        M3_EventBus.Subscribe<M3_Event_GemSwapped>(OnGemSwapped);
+
         GameObject GridPrefab = M3_CommonHelper.GetPrefab("Grid");
         if (GridPrefab != null)
         {
@@ -27,5 +30,26 @@ public class M3_Match3Battle
                 _Grid.AddCell(NewCell, i, j, M3_FillMode.AspectFit, true);
             }
         }
+
+        _AIController = new M3_AIController(_Grid);
+    }
+
+    public void SwitchController()
+    {
+        if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.Player)
+        {
+            M3_GameController.Instance.SetBattleInputController(M3_ControllerType.AI);
+            M3_EventBus.SendEvent(new M3_Event_BattleControllerChanged(M3_ControllerType.AI));
+        }
+        else
+        {
+            M3_GameController.Instance.SetBattleInputController(M3_ControllerType.Player);
+            M3_EventBus.SendEvent(new M3_Event_BattleControllerChanged(M3_ControllerType.Player));
+        }
+    }
+
+    private void OnGemSwapped(M3_Event_GemSwapped Event)
+    {
+        SwitchController();
     }
 }

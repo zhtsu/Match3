@@ -22,4 +22,5 @@ public struct M3_GlobalData
     public M3_GameState CurrentGameState;
     public M3_Match3Battle CurrentM3Battle;
     public M3_Gem CurrentClickedGem;
+    public M3_ControllerType CurrentBattleInputController;
 };

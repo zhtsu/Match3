@@ -20,6 +20,7 @@ public class M3_GridCellContainer : MonoBehaviour
     private float _Width = 0;
     private float _Height = 0;
     private M3_IGridCell _GemCell;
+    private M3_IGridCell _GemCellWaitToDestroy;
     private M3_IGridCell _TileCell;
     private Color _SavedTileColor;
     private Sequence _Sequence;
@@ -66,7 +67,7 @@ public class M3_GridCellContainer : MonoBehaviour
         }
     }
 
-    public void AddCell(M3_IGridCell GridCell, M3_FillMode FillMode = M3_FillMode.None, bool ScaleFollowParent = true, bool WithAnim = false)
+    public void AddCell(M3_IGridCell GridCell, M3_FillMode FillMode = M3_FillMode.None, bool ScaleFollowParent = true, bool WithAnim = false, float AnimDuration = 0.6f)
     {
         _GemCell = GridCell;
 
@@ -93,14 +94,18 @@ public class M3_GridCellContainer : MonoBehaviour
             if (WithAnim)
             {
                 const float FallOffset = 200f;
-                const float Duration = 0.3f;
 
                 Vector3 StartPosition = new Vector3(0f, FallOffset, 0f);
                 CellTransform.localPosition = StartPosition;
 
-                Tween.LocalPosition(CellTransform, Vector3.zero, Duration, Ease.OutQuad);
+                Tween.LocalPosition(CellTransform, Vector3.zero, AnimDuration, Ease.OutQuad);
             }
         }
+    }
+
+    public void SetGemCell(M3_IGridCell InGridCell)
+    {
+        _GemCell = InGridCell;
     }
 
     public M3_IGridCell GetTileCell()
@@ -113,11 +118,19 @@ public class M3_GridCellContainer : MonoBehaviour
         return _GemCell;
     }
 
+    public void ClearGemCell()
+    {
+        _GemCell = null;
+    }
+
     public void RemoveGemCell()
     {
+        _GemCellWaitToDestroy = _GemCell;
+        _GemCell = null;
+
         _Sequence.Stop();
-        Tween Tw1 = Tween.Scale(((MonoBehaviour)_GemCell).transform, 1.2f, 0.5f, Ease.InQuad);
-        Tween Tw2 = Tween.Scale(((MonoBehaviour)_GemCell).transform, 0.0f, 0.25f, Ease.InQuad);
+        Tween Tw1 = Tween.Scale(((MonoBehaviour)_GemCellWaitToDestroy).transform, 1.2f, 0.5f, Ease.InQuad);
+        Tween Tw2 = Tween.Scale(((MonoBehaviour)_GemCellWaitToDestroy).transform, 0.0f, 0.25f, Ease.InQuad);
         _Sequence = Sequence.Create()
             .Chain(Tw1)
             .Chain(Tw2)
@@ -133,13 +146,14 @@ public class M3_GridCellContainer : MonoBehaviour
 
         ResetTileColor();
 
-        if (_GemCell != null)
+        if (_GemCellWaitToDestroy != null)
         {
-            M3_Gem Gem = ((M3_Gem)_GemCell);
+            M3_Gem Gem = ((M3_Gem)_GemCellWaitToDestroy);
             Gem.transform.parent = null;
             Gem.DestroySelf();
-            _GemCell = null;
         }
+
+        ParentGrid.ApplyGravity();
     }
 
     private Vector3 CalFillScale(M3_FillMode FillMode, Bounds InBounds, Vector3 BakedScale, float Padding = 0.0f)
@@ -217,5 +231,10 @@ public class M3_GridCellContainer : MonoBehaviour
                 Tile.GetComponent<SpriteRenderer>().color = _SavedTileColor;
             }
         }
+    }
+
+    public bool IsEmpty()
+    {
+        return _GemCell == null;
     }
 }

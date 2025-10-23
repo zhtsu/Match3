@@ -1,6 +1,8 @@
 using PrimeTween;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.GraphicsBuffer;
 
 public class M3_Grid : MonoBehaviour
@@ -19,6 +21,8 @@ public class M3_Grid : MonoBehaviour
 
     private M3_GridCellContainer[,] _GridArray;
     private Sequence _SwapSequence;
+    private Vector2Int SimulateSwapCoordsA;
+    private Vector2Int SimulateSwapCoordsB;
 
     public void Initialize(int Row, int Column, float TileSize)
     {
@@ -28,7 +32,7 @@ public class M3_Grid : MonoBehaviour
         _GridArray = new M3_GridCellContainer[_Row, _Column];
     }
 
-    public void SwapGemCell(int X1, int Y1, int X2, int Y2)
+    public void SwapGemCell(int X1, int Y1, int X2, int Y2, bool RunCheck = true)
     {
         M3_GridCellContainer ConA = _GridArray[X1, Y1];
         M3_GridCellContainer ConB = _GridArray[X2, Y2];
@@ -47,11 +51,100 @@ public class M3_Grid : MonoBehaviour
             .Group(MoveB)
             .ChainCallback(() =>
             {
-                OnSwapCompleted(ConA, ConB, GemA, GemB);
+                OnSwapCompleted(ConA, ConB, GemA, GemB, RunCheck);
             });
     }
 
-    public void OnSwapCompleted(M3_GridCellContainer ConA, M3_GridCellContainer ConB, M3_IGridCell CellA, M3_IGridCell CellB)
+    public void SwapGemByAI()
+    {
+        List<M3_DragGemData> SwappableList = new List<M3_DragGemData>();
+        for (int i = 0; i < _Row; i++)
+        {
+            for (int j = 0; j < _Column; j++)
+            {
+                List<M3_MouseMoveDirection> DirList = GetSwappableDirectionList(i, j);
+                foreach (M3_MouseMoveDirection Dir in DirList)
+                {
+                    SwappableList.Add(new M3_DragGemData(_GridArray[i, j], Dir));
+                }
+            }
+        }
+
+        if (SwappableList.Count == 0)
+            return;
+
+        int RandomIndex = UnityEngine.Random.Range(0, SwappableList.Count);
+        M3_DragGemData RDGD = SwappableList[RandomIndex];
+
+        M3_ManagerHub.Instance.CommandManager.PushCommand(
+            new M3_Command_DragGem(RDGD.DraggedContainer, RDGD.DragDirection));
+    }
+
+    List<M3_MouseMoveDirection> GetSwappableDirectionList(int X, int Y)
+    {
+        List<M3_MouseMoveDirection> Result = new List<M3_MouseMoveDirection>();
+
+        foreach (M3_MouseMoveDirection Dir in System.Enum.GetValues(typeof(M3_MouseMoveDirection)))
+        {
+            if (Dir == M3_MouseMoveDirection.None)
+                continue;
+
+            M3_GridCellContainer Cont = _GridArray[X, Y];
+            if (IsCanSwap(Cont, Dir))
+                Result.Add(Dir);
+        }
+
+        return Result;
+    }
+
+    public bool IsCanSwap(M3_GridCellContainer Cont, M3_MouseMoveDirection Dir)
+    {
+        if (Cont == null)
+            return false;
+
+        int TargetX = Cont.GridCoords.x;
+        int TargetY = Cont.GridCoords.y;
+        switch (Dir)
+        {
+            case M3_MouseMoveDirection.Up:
+                TargetY += 1;
+                break;
+            case M3_MouseMoveDirection.Down:
+                TargetY -= 1;
+                break;
+            case M3_MouseMoveDirection.Left:
+                TargetX -= 1;
+                break;
+            case M3_MouseMoveDirection.Right:
+                TargetX += 1;
+
+                break;
+        }
+
+        M3_GridCellContainer ContB = null;
+        if (TargetX >= 0 && TargetX < _Row && TargetY >= 0 && TargetY < _Column)
+            ContB = _GridArray[TargetX, TargetY];
+        if (ContB == null)
+            return false;
+
+        M3_IGridCell ContC = Cont.GetGemCell();
+        Cont.SetGemCell(ContB.GetGemCell());
+        ContB.SetGemCell(ContC);
+
+        bool Result = false;
+        if (IsCanMatch3FromCoords(TargetX, TargetY))
+            Result = true;
+        else
+            Result = false;
+
+        M3_IGridCell ContD = Cont.GetGemCell();
+        Cont.SetGemCell(ContB.GetGemCell());
+        ContB.SetGemCell(ContD);
+
+        return Result;
+    }
+
+    public void OnSwapCompleted(M3_GridCellContainer ConA, M3_GridCellContainer ConB, M3_IGridCell CellA, M3_IGridCell CellB, bool RunCheck)
     {
         ConA.AddCell(CellB, M3_FillMode.AspectFit, false);
         ConB.AddCell(CellA, M3_FillMode.AspectFit, false);
@@ -63,7 +156,27 @@ public class M3_Grid : MonoBehaviour
             GemA.RecoverScale();
         }
 
-        CheckMatch3IfCan();
+        if (RunCheck)
+        {
+            if (IsCanMatch3FromCoords(ConB.GridCoords.x, ConB.GridCoords.y))
+            {
+                RunMatch3();
+                Tween.Delay(1f, () =>
+                {
+                    M3_GameController.Instance.SetAllowInput(true);
+                    M3_EventBus.SendEvent<M3_Event_GemSwapped>();
+                });
+            }
+            else
+                SwapGemCell(ConA.GridCoords.x, ConA.GridCoords.y, ConB.GridCoords.x, ConB.GridCoords.y, false);
+        }
+        else
+        {
+            Tween.Delay(0.1f, () =>
+            {
+                M3_GameController.Instance.SetAllowInput(true);
+            });
+        }
     }
 
     public void AddCell(M3_IGridCell GridCell, int X, int Y, M3_FillMode FillMode = M3_FillMode.None, bool WithAnim = false)
@@ -197,7 +310,32 @@ public class M3_Grid : MonoBehaviour
         }
     }
 
-    private void CheckMatch3IfCan()
+    private bool IsCanMatch3FromCoords(int X, int Y)
+    {
+        List<M3_GridCellContainer> RightMatchs = GetMatchs(X, Y, 1, 0);
+        List<M3_GridCellContainer> UpMatchs = GetMatchs(X, Y, 0, 1);
+        List<M3_GridCellContainer> LeftMatchs = GetMatchs(X, Y, -1, 0);
+        List<M3_GridCellContainer> DownMatchs = GetMatchs(X, Y, 0, -1);
+
+        HashSet<M3_GridCellContainer> HMatchs = new HashSet<M3_GridCellContainer>();
+        foreach (M3_GridCellContainer Cont in RightMatchs)
+            HMatchs.Add(Cont);
+        foreach (M3_GridCellContainer Cont in LeftMatchs)
+            HMatchs.Add(Cont);
+
+        HashSet<M3_GridCellContainer> VMatchs = new HashSet<M3_GridCellContainer>();
+        foreach (M3_GridCellContainer Cont in UpMatchs)
+            VMatchs.Add(Cont);
+        foreach (M3_GridCellContainer Cont in DownMatchs)
+            VMatchs.Add(Cont);
+
+        if (HMatchs.Count >= 3 || VMatchs.Count >= 3)
+            return true;
+
+        return false;
+    }
+
+    private bool IsCanMatch3(out HashSet<M3_GridCellContainer> OutCellsToDestroy)
     {
         HashSet<M3_GridCellContainer> CellsToDestroy = new HashSet<M3_GridCellContainer>();
 
@@ -227,33 +365,46 @@ public class M3_Grid : MonoBehaviour
             }
         }
 
-        List<Tween> Tweens = new List<Tween>();
-        foreach (M3_GridCellContainer Cont in CellsToDestroy)
-        {
-            SpriteRenderer TileSprite = ((M3_Tile)Cont.GetTileCell()).transform.GetComponent<SpriteRenderer>();
+        OutCellsToDestroy = CellsToDestroy;
+        return CellsToDestroy.Count > 0;
+    }
 
-            Tween Tw = Tween.Color(TileSprite, M3_CommonHelper.GetCommonColor(M3_ColorType.White), 0.1f, Ease.InOutCubic);
-            Tweens.Add(Tw);
-        }
-
-        if (CellsToDestroy.Count > 0)
-            M3_GameController.Instance.SetAllowInput(false);
-        else
-            M3_GameController.Instance.SetAllowInput(true);
-
-        _SwapSequence.Stop();
-        _SwapSequence = Sequence.Create();
-        foreach (Tween Tw in Tweens)
+    private void RunMatch3()
+    {
+        if (IsCanMatch3(out HashSet<M3_GridCellContainer> CellsToDestroy))
         {
-            _SwapSequence.Chain(Tw);
-        }
-        _SwapSequence.ChainCallback(() =>
-        {
+            if (CellsToDestroy.Count > 0)
+                M3_GameController.Instance.SetAllowInput(false);
+            else
+                M3_GameController.Instance.SetAllowInput(true);
+
+            List<Tween> Tweens = new List<Tween>();
             foreach (M3_GridCellContainer Cont in CellsToDestroy)
             {
-                Cont.RemoveGemCell();
+                SpriteRenderer TileSprite = ((M3_Tile)Cont.GetTileCell()).transform.GetComponent<SpriteRenderer>();
+
+                Tween Tw = Tween.Color(TileSprite, M3_CommonHelper.GetCommonColor(M3_ColorType.White), 0.1f, Ease.InOutCubic);
+                Tweens.Add(Tw);
             }
-        });
+
+            _SwapSequence.Stop();
+            _SwapSequence = Sequence.Create();
+            foreach (Tween Tw in Tweens)
+            {
+                _SwapSequence.Chain(Tw);
+            }
+            _SwapSequence.ChainCallback(() =>
+            {
+                foreach (M3_GridCellContainer Cont in CellsToDestroy)
+                {
+                    Cont.RemoveGemCell();
+                }
+            });
+        }
+        else
+        {
+            M3_GameController.Instance.SetAllowInput(true);
+        }
     }
 
     private List<M3_GridCellContainer> GetMatchs(int StartX, int StartY, int DirX, int DirY)
@@ -294,6 +445,63 @@ public class M3_Grid : MonoBehaviour
             Y += DirY;
         }
 
-        return Matches.Count >= 3 ? Matches : new List<M3_GridCellContainer>();
+        return Matches;
+    }
+
+    public void ApplyGravity()
+    {
+        M3_GameController.Instance.SetAllowInput(false);
+
+        List<Sequence> Sequences = new List<Sequence>();
+        for (int i = 0; i < _Column; i++)
+        {
+            int EmptyCount = 0;
+            for (int j = 0; j < _Row; j++)
+            {
+                if (_GridArray[i, j].IsEmpty())
+                {
+                    EmptyCount++;
+                }
+                else if (EmptyCount > 0)
+                {
+                    M3_IGridCell GemCell = _GridArray[i, j].GetGemCell();
+                    _GridArray[i, j].ClearGemCell();
+
+                    int TargetI = i;
+                    int TargetJ = j - EmptyCount;
+                    Vector3 TargetPos = _GridArray[TargetI, TargetJ].transform.position;
+
+                    Tween Tw = Tween.Position(((MonoBehaviour)GemCell).transform, TargetPos, 0.2f, Ease.InOutCubic);
+                    Sequence.Create()
+                        .Chain(Tw)
+                        .ChainCallback(() =>
+                        {
+                            _GridArray[TargetI, TargetJ].AddCell(GemCell, M3_FillMode.AspectFit, false);
+                        });
+                }
+            }
+        }
+
+        Tween.Delay(0.2f, () =>
+        {
+            FillEmptyCells();
+            RunMatch3();
+        });
+    }
+
+    public void FillEmptyCells()
+    {
+        for (int i = 0; i < _Row; i++)
+        {
+            for (int j = 0; j < _Column; j++)
+            {
+                if (_GridArray[i, j].IsEmpty())
+                {
+                    M3_UnitData GemData = M3_CommonHelper.GetRandomGemData();
+                    M3_IGridCell NewCell = M3_CommonHelper.SpawnGem(GemData.BelongingModId, GemData.Id);
+                    _GridArray[i, j].AddCell(NewCell, M3_FillMode.AspectFit, false, true, 0.3f);
+                }
+            }
+        }
     }
 }

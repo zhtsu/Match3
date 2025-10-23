@@ -248,7 +248,7 @@ public class M3_CommonHelper
         if (UnitDataList.Count == 0)
             return new M3_UnitData();
 
-        int RandomIndex = UnityEngine.Random.Range(0, UnitDataList.Count);
+        int RandomIndex = UnityEngine.Random.Range(0, 5);
         return UnitDataList[RandomIndex];
     }
 }

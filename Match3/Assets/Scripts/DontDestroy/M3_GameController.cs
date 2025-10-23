@@ -26,6 +26,7 @@ public class M3_GameController : MonoBehaviour
     public M3_ModAPI ModAPI { get { return _ModAPI; } }
     public M3_Gem CurrentClickedGem { get { return _GlobalData.CurrentClickedGem; } }
     public bool IsAllowInput { get { return _GlobalData.IsAllowInput; } }
+    public M3_ControllerType CurrentBattleInputController { get { return _GlobalData.CurrentBattleInputController; } }
 
     private void Awake()
     {
@@ -44,6 +45,7 @@ public class M3_GameController : MonoBehaviour
 
         _GlobalData.CurrentM3Battle = null;
         _GlobalData.CurrentGameState = M3_GameState.Loading;
+        _GlobalData.CurrentBattleInputController = M3_ControllerType.Player;
 
         _Instance = this;
     }
@@ -178,5 +180,10 @@ public class M3_GameController : MonoBehaviour
     public void SetAllowInput(bool IsAllow)
     {
         _GlobalData.IsAllowInput = IsAllow;
+    }
+
+    public void SetBattleInputController(M3_ControllerType ControllerType)
+    {
+        _GlobalData.CurrentBattleInputController = ControllerType;
     }
 }

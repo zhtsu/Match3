@@ -39,3 +39,16 @@ public class M3_Event_StoriesReadCompleted : M3_Event
         MainInkFileList = InMainInkFileList;
     }
 }
+
+public class M3_Event_BattleControllerChanged : M3_Event
+{
+    public M3_ControllerType NewControllerType;
+    public M3_Event_BattleControllerChanged(M3_ControllerType InNewControllerType)
+    {
+        NewControllerType = InNewControllerType;
+    }
+}
+
+public class M3_Event_GemSwapped : M3_Event
+{
+}

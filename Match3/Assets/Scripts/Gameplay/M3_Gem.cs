@@ -41,6 +41,9 @@ public class M3_Gem : M3_Unit, M3_IGridCell
         if (M3_GameController.Instance.IsAllowInput == false)
             return;
 
+        if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.AI)
+            return;
+
         M3_GameController.Instance.SetCurrentClickedGem(this);
 
         _PreMouseClickPos = Input.mousePosition;
@@ -56,6 +59,9 @@ public class M3_Gem : M3_Unit, M3_IGridCell
     public void OnMouseUpEvent()
     {
         if (M3_GameController.Instance.IsAllowInput == false)
+            return;
+
+        if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.AI)
             return;
 
         M3_GameController.Instance.SetAllowInput(false);

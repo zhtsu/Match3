@@ -1,11 +1,24 @@
 using UnityEngine;
 
+public struct M3_DragGemData
+{
+    public M3_DragGemData(M3_GridCellContainer InDraggedContainer, M3_MouseMoveDirection InDragDirection)
+    {
+        DraggedContainer = InDraggedContainer;
+        DragDirection = InDragDirection;
+    }
+
+    public M3_GridCellContainer DraggedContainer;
+    public M3_MouseMoveDirection DragDirection;
+}
+
 public class M3_Command_DragGem : M3_Command
 {
     public override string CommandName { get { return "Drag Gems Command"; } }
     public override bool IsExecuting { get { return _IsExecuting; } }
     public override bool IsAsync { get { return _IsAsync; } }
 
+    private M3_DragGemData _DragGemData;
     private M3_GridCellContainer _DraggedContainer;
     private M3_MouseMoveDirection _DragDirection;
     private bool _IsExecuting = false;
