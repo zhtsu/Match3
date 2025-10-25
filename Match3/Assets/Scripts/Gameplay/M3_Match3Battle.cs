@@ -7,9 +7,9 @@ public class M3_Match3Battle
     private M3_Grid _Grid;
     private M3_AIController _AIController;
 
-    public void StartBattle(M3_LevelData LevelData)
+    public IEnumerator StartBattle(M3_LevelData LevelData)
     {
-        M3_EventBus.Subscribe<M3_Event_GemSwapped>(OnGemSwapped);
+        M3_EventBus.Subscribe<M3_Event_TurnEnded>(OnTurnEnded);
 
         GameObject GridPrefab = M3_CommonHelper.GetPrefab("Grid");
         if (GridPrefab != null)
@@ -21,15 +21,8 @@ public class M3_Match3Battle
         _Grid.Initialize(LevelData.Row, LevelData.Column, LevelData.TileSize);
         _Grid.GenerateGrid();
 
-        for (int i = 0; i < _Grid.Row; i++)
-        {
-            for (int j = 0; j < _Grid.Column; j++)
-            {
-                M3_UnitData GemData = M3_CommonHelper.GetRandomGemData();
-                M3_IGridCell NewCell = M3_CommonHelper.SpawnGem(GemData.BelongingModId, GemData.Id);
-                _Grid.AddCell(NewCell, i, j, M3_FillMode.AspectFit, true);
-            }
-        }
+        yield return _Grid.FillEmptyCellsCoroutine(0.6f);
+        yield return _Grid.ProcessMatch3Coroutine();
 
         _AIController = new M3_AIController(_Grid);
     }
@@ -48,7 +41,7 @@ public class M3_Match3Battle
         }
     }
 
-    private void OnGemSwapped(M3_Event_GemSwapped Event)
+    private void OnTurnEnded(M3_Event_TurnEnded Event)
     {
         SwitchController();
     }

@@ -1,0 +1,16 @@
+{
+    "Id": "circle_pink",
+    "Name": "circle_pink_gem_name",
+    "Description": "circle_pink_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/circle_pink.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/circle_pink.lua"
+}

@@ -3,20 +3,20 @@ using UnityEngine;
 
 public class M3_PathHelper
 {
-    private static string ModsPath = null;
+    private static string _ModsPath = null;
 
     public static string GetModsPath()
     {
-        if (ModsPath == null)
+        if (_ModsPath == null)
         {
-            ModsPath = NormalizePath(Path.Combine(Application.persistentDataPath, "Mods"));
-            if (!Directory.Exists(ModsPath))
+            _ModsPath = NormalizePath(Path.Combine(Application.persistentDataPath, "Mods"));
+            if (!Directory.Exists(_ModsPath))
             {
-                Directory.CreateDirectory(ModsPath);
+                Directory.CreateDirectory(_ModsPath);
             }
         }
 
-        return ModsPath;
+        return _ModsPath;
     }
 
     public static string GetModSubfilePath(string FilePath)
@@ -27,9 +27,20 @@ public class M3_PathHelper
         return NormalizePath(Path.Combine(GetModsPath(), FilePath));
     }
 
+    public static string GetModSubfilePath_Resources(string FilePath)
+    {
+        if (string.IsNullOrEmpty(FilePath))
+            return "Mods";
+
+        string FileNameWithoutExt = Path.GetFileNameWithoutExtension(FilePath);
+        string FileDir = Path.GetDirectoryName(FilePath);
+
+        return NormalizePath(Path.Combine("Mods", FileDir + "/" + FileNameWithoutExt));
+    }
+
     public static Hash128 GetHash(string FilePath)
     {
-        return Hash128.Compute(GetModSubfilePath(FilePath));
+        return Hash128.Compute(GetModSubfilePath_Resources(FilePath));
     }
 
     private static string NormalizePath(string InPath)

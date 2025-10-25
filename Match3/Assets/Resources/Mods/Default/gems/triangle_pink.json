@@ -1,0 +1,16 @@
+{
+    "Id": "triangle_pink",
+    "Name": "triangle_pink_gem_name",
+    "Description": "triangle_pink_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/triangle_pink.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/triangle_pink.lua"
+}

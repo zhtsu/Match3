@@ -1,0 +1,16 @@
+{
+    "Id": "rect_green",
+    "Name": "rect_green_gem_name",
+    "Description": "rect_green_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/rect_green.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/rect_green.lua"
+}

@@ -18,9 +18,6 @@ public class M3_AIController : M3_Controller
         if (Event.NewControllerType != M3_ControllerType.AI)
             return;
 
-        Tween.Delay(10.0f, () =>
-        {
-            _Grid.SwapGemByAI();
-        });
+        _Grid.SwapGemByAI();
     }
 }

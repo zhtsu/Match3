@@ -1,0 +1,16 @@
+{
+    "Id": "circle_green",
+    "Name": "circle_green_gem_name",
+    "Description": "circle_green_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/circle_green.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/circle_green.lua"
+}

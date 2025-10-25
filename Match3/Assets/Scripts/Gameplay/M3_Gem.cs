@@ -10,7 +10,6 @@ public class M3_Gem : M3_Unit, M3_IGridCell
     public M3_GridCellContainer ParentContainer { get; set; }
 
     private Vector2 _PreMouseClickPos;
-    private Tween _Tween_Scale;
     private Vector3 _SavedScale;
     private int _SavedOrder;
 
@@ -50,8 +49,7 @@ public class M3_Gem : M3_Unit, M3_IGridCell
 
         SetOrderToTop();
 
-        _Tween_Scale.Stop();
-        _Tween_Scale = Tween.Scale(transform, _SavedScale.x * 1.2f, 0.05f, Ease.OutQuad);
+        Tween.Scale(transform, _SavedScale.x * 1.2f, 0.05f, Ease.OutQuad);
 
         CallScriptFunc("OnMouseDown");
     }
@@ -108,16 +106,15 @@ public class M3_Gem : M3_Unit, M3_IGridCell
 
     public void DestroySelf()
     {
-        _Tween_Scale.Stop();
         Destroy(this.gameObject);
     }
 
-    public void RecoverScale()
+    public IEnumerator RecoverScale()
     {
         if (transform.localScale != _SavedScale)
         {
-            _Tween_Scale.Stop();
-            _Tween_Scale = Tween.Scale(transform, _SavedScale, 0.1f, Ease.OutBack);
+            Tween Tw = Tween.Scale(transform, _SavedScale, 0.1f, Ease.OutBack);
+            yield return Tw.ToYieldInstruction();
         }
     }
 }

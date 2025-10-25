@@ -1,0 +1,16 @@
+{
+    "Id": "circle_blue",
+    "Name": "circle_blue_gem_name",
+    "Description": "circle_blue_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/circle_blue.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/circle_blue.lua"
+}

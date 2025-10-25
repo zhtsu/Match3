@@ -27,34 +27,33 @@ public class M3_StoryManager : M3_Manager
 
     private void OnStoriesReadCompleted(M3_Event_StoriesReadCompleted Event)
     {
-        LoadStoriesAsync(Event.MainInkFileList).ContinueWith((Task<bool> LoadTask) =>
-        {
-            M3_EventBus.SendEvent<M3_Event_StoriesLoadCompleted>();
-        });
+        LoadStories(Event.MainInkFileList);
+        M3_EventBus.SendEvent<M3_Event_StoriesLoadCompleted>();
     }
 
-    private async Task<bool> LoadStoriesAsync(List<string> MainInkFileList)
+    private bool LoadStories(List<string> MainInkFileList)
     {
         List<Task<bool>> LoadTasks = new List<Task<bool>>();
         foreach (string MainInkFilePath in MainInkFileList)
         {
-            LoadTasks.Add(LoadStoryAsync(MainInkFilePath));
+            //LoadTasks.Add(LoadStoryAsync(MainInkFilePath));
+            LoadStory(MainInkFilePath);
         }
 
-        bool[] Results = await Task.WhenAll(LoadTasks);
-        foreach (bool Result in Results)
-        {
-            if (!Result)
-            {
-                return false;
-            }
-        }
+        //bool[] Results = await Task.WhenAll(LoadTasks);
+        //foreach (bool Result in Results)
+        //{
+        //    if (!Result)
+        //    {
+        //        return false;
+        //    }
+        //}
 
         Debug.Log("[StoryManager] All ink file loaded successfully.");
         return true;
     }
 
-    private async Task<bool> LoadStoryAsync(string MainInkFilePath)
+    private bool LoadStory(string MainInkFilePath)
     {
         Hash128 StoryId = Hash128.Compute(MainInkFilePath);
         if (_StoryDict.ContainsKey(StoryId))
@@ -63,41 +62,43 @@ public class M3_StoryManager : M3_Manager
             return false;
         }
 
-        if (!File.Exists(MainInkFilePath))
-        {
-            Debug.LogWarning($"[StoryManager] {MainInkFilePath} no exist!");
-            return false;
-        }
+        //if (!File.Exists(MainInkFilePath))
+        //{
+        //    Debug.LogWarning($"[StoryManager] {MainInkFilePath} no exist!");
+        //    return false;
+        //}
 
         string MainInkFileText = null;
 
         try
         {
-            MainInkFileText = await Task.Run(() => File.ReadAllText(MainInkFilePath));
+            MainInkFileText = Resources.Load<TextAsset>(MainInkFilePath).text;
         }
         catch (System.Exception Err)
         {
             Debug.LogError($"[StoryManager] Fail to read {MainInkFilePath}\n Error: {Err.Message}");
         }
 
-        var NewCompiler = new Ink.Compiler(MainInkFileText, new Ink.Compiler.Options
-        {
-            countAllVisits = true,
-            fileHandler = new Ink.UnityFileHandler(
-                System.IO.Path.GetDirectoryName(MainInkFilePath)
-            )
-        });
+        //var NewCompiler = new Ink.Compiler(MainInkFileText, new Ink.Compiler.Options
+        //{
+        //    countAllVisits = true,
+        //    fileHandler = new Ink.UnityFileHandler(
+        //        System.IO.Path.GetDirectoryName(MainInkFilePath)
+        //    )
+        //});
 
-        Story NewStory = null;
-        try
-        {
-            NewStory = NewCompiler.Compile();
-        }
-        catch(System.Exception Ex)
-        {
-            Debug.LogError(Ex);
-        }
-        
+        //Story NewStory = null;
+        //try
+        //{
+        //    NewStory = NewCompiler.Compile();
+        //}
+        //catch(System.Exception Ex)
+        //{
+        //    Debug.LogError(Ex);
+        //}
+
+        Story NewStory = new Ink.Runtime.Story(MainInkFileText);
+
         M3_CommonHelper.BindModApiToStory(NewStory);
 
         _StoryDict[StoryId] = NewStory;

@@ -1,0 +1,16 @@
+{
+    "Id": "pentagon_pink",
+    "Name": "pentagon_pink_gem_name",
+    "Description": "pentagon_pink_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/pentagon_pink.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/pentagon_pink.lua"
+}

@@ -1,0 +1,16 @@
+{
+    "Id": "star_yellow",
+    "Name": "star_yellow_gem_name",
+    "Description": "star_yellow_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/star_yellow.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/star_yellow.lua"
+}

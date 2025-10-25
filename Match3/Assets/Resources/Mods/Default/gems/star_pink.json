@@ -1,0 +1,16 @@
+{
+    "Id": "star_pink",
+    "Name": "star_pink_gem_name",
+    "Description": "star_pink_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/star_pink.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/star_pink.lua"
+}

@@ -61,15 +61,16 @@ public class M3_DataManager : M3_Manager
 
     private void LoadUnitData(string InModId, string InUnitFilePath)
     {
-        if (!File.Exists(InUnitFilePath))
-        {
-            Debug.LogError(InUnitFilePath + " no exist!");
-            return;
-        }
+        //if (!File.Exists(InUnitFilePath))
+        //{
+        //    Debug.LogError(InUnitFilePath + " no exist!");
+        //    return;
+        //}
 
         try
         {
-            string UnitFileContent = File.ReadAllText(InUnitFilePath, System.Text.Encoding.UTF8);
+            //string UnitFileContent = File.ReadAllText(InUnitFilePath, System.Text.Encoding.UTF8);
+            string UnitFileContent = Resources.Load<TextAsset>(InUnitFilePath).text;
 
             if (M3_DataHelper.Deserialize<M3_UnitData>(UnitFileContent, out M3_UnitData UnitData))
             {
@@ -156,44 +157,47 @@ public class M3_DataManager : M3_Manager
 
     private void LoadModData()
     {
-        foreach (string ModSubDir in Directory.GetDirectories(M3_PathHelper.GetModsPath()))
-        {
-            string ModFilePath = M3_PathHelper.GetModSubfilePath(System.IO.Path.Combine(ModSubDir, "mod.json"));
-            if (!File.Exists(ModFilePath))
-            {
-                Debug.LogError(ModFilePath + " no exist!");
-                continue;
-            }
+        //foreach (string ModSubDir in Directory.GetDirectories(M3_PathHelper.GetModsPath()))
+        //{
+        //string ModFilePath = M3_PathHelper.GetModSubfilePath(System.IO.Path.Combine(ModSubDir, "mod.json"));
+        //if (!File.Exists(ModFilePath))
+        //{
+        //    Debug.LogError(ModFilePath + " no exist!");
+        //    continue;
+        //}
 
-            try
-            {
-                string ModFileContent = File.ReadAllText(ModFilePath, System.Text.Encoding.UTF8);
+        string ModFilePath = "Mods/Default/mod";
 
-                if (M3_DataHelper.Deserialize<M3_ModData>(ModFileContent, out M3_ModData ModData))
+        try
+            {
+            //string ModFileContent = File.ReadAllText(ModFilePath, System.Text.Encoding.UTF8);
+            string ModFileContent = Resources.Load<TextAsset>(ModFilePath).text;
+
+            if (M3_DataHelper.Deserialize<M3_ModData>(ModFileContent, out M3_ModData ModData))
                 {
                     _ModDataList.Add(ModData);
                 }
 
                 foreach (string LocaleFile in ModData.LocaleList)
                 {
-                    LoadLocaleData(ModData.Id, M3_PathHelper.GetModSubfilePath(LocaleFile));
+                    LoadLocaleData(ModData.Id, M3_PathHelper.GetModSubfilePath_Resources(LocaleFile));
                 }
 
                 foreach (string TileFile in ModData.TileList)
                 {
-                    LoadTileData(ModData.Id, M3_PathHelper.GetModSubfilePath(TileFile));
+                    LoadTileData(ModData.Id, M3_PathHelper.GetModSubfilePath_Resources(TileFile));
                 }
 
                 foreach (string UnitFile in ModData.UnitList)
                 {
-                    LoadUnitData(ModData.Id, M3_PathHelper.GetModSubfilePath(UnitFile));
+                    LoadUnitData(ModData.Id, M3_PathHelper.GetModSubfilePath_Resources(UnitFile));
                 }
             }
             catch (System.Exception Err)
             {
                 Debug.LogError($"Fail to read {ModFilePath}\n Error: {Err.Message}");
             }
-        }
+        //}
     }
 
     public List<M3_ModData> GetModDataList()
@@ -253,15 +257,16 @@ public class M3_DataManager : M3_Manager
             _LocaleStringDict[InNamespace] = new Dictionary<string, Dictionary<string, string>>();
         }
 
-        if (!File.Exists(InLocaleFilePath))
-        {
-            Debug.LogError(InLocaleFilePath + " no exist!");
-            return;
-        }
+        //if (!File.Exists(InLocaleFilePath))
+        //{
+        //    Debug.LogError(InLocaleFilePath + " no exist!");
+        //    return;
+        //}
 
         try
         {
-            string LocaleFileContent = File.ReadAllText(InLocaleFilePath, System.Text.Encoding.UTF8);
+            //string LocaleFileContent = File.ReadAllText(InLocaleFilePath, System.Text.Encoding.UTF8);
+            string LocaleFileContent = Resources.Load<TextAsset>(InLocaleFilePath).text;
             JsonData LocaleJsonData = JsonMapper.ToObject(LocaleFileContent);
 
             foreach (string LanguageCode in LocaleJsonData.Keys)
@@ -300,7 +305,7 @@ public class M3_DataManager : M3_Manager
             {
                 foreach (string TexturePath in AnimData.Keyframes)
                 {
-                    TexturePathList.Add(M3_PathHelper.GetModSubfilePath(TexturePath));
+                    TexturePathList.Add(M3_PathHelper.GetModSubfilePath_Resources(TexturePath));
                 }
             }
         }
@@ -311,7 +316,7 @@ public class M3_DataManager : M3_Manager
             {
                 foreach (string TexturePath in AnimData.Keyframes)
                 {
-                    TexturePathList.Add(M3_PathHelper.GetModSubfilePath(TexturePath));
+                    TexturePathList.Add(M3_PathHelper.GetModSubfilePath_Resources(TexturePath));
                 }
             }
         }
@@ -325,12 +330,12 @@ public class M3_DataManager : M3_Manager
 
         foreach (M3_UnitData UnitData in _UnitDataList)
         {
-            ScriptPathList.Add(M3_PathHelper.GetModSubfilePath(UnitData.ScriptPath));
+            ScriptPathList.Add(M3_PathHelper.GetModSubfilePath_Resources(UnitData.ScriptPath));
         }
 
         foreach (M3_TileData TileData in _TileDataList)
         {
-            ScriptPathList.Add(M3_PathHelper.GetModSubfilePath(TileData.ScriptPath));
+            ScriptPathList.Add(M3_PathHelper.GetModSubfilePath_Resources(TileData.ScriptPath));
         }
 
         M3_EventBus.SendEvent(new M3_Event_ScriptsReadCompleted(ScriptPathList));
@@ -342,7 +347,7 @@ public class M3_DataManager : M3_Manager
 
         foreach (M3_ModData ModData in _ModDataList)
         {
-            MainInkFileList.Add(M3_PathHelper.GetModSubfilePath(ModData.MainInkFile));
+            MainInkFileList.Add(M3_PathHelper.GetModSubfilePath_Resources(ModData.MainInkFile));
         }
 
         M3_EventBus.SendEvent(new M3_Event_StoriesReadCompleted(MainInkFileList));

@@ -1,0 +1,16 @@
+{
+    "Id": "triangle_yellow",
+    "Name": "triangle_yellow_gem_name",
+    "Description": "triangle_yellow_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/triangle_yellow.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/triangle_yellow.lua"
+}

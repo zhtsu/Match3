@@ -31,38 +31,37 @@ public class M3_ScriptManager : M3_Manager
 
     private void OnScriptsReadCompleted(M3_Event_ScriptsReadCompleted Event)
     {
-        LoadLuaScriptsAsync(Event.ScriptList).ContinueWith((Task<bool> LoadTask) =>
-        {
-            M3_EventBus.SendEvent<M3_Event_ScriptsLoadCompleted>();
-        });
+        LoadLuaScripts(Event.ScriptList);
+        M3_EventBus.SendEvent<M3_Event_ScriptsLoadCompleted>();
     }
 
-    private async Task<bool> LoadLuaScriptsAsync(List<string> ScriptPaths)
+    private bool LoadLuaScripts(List<string> ScriptPaths)
     {
         List<Task<bool>> LoadTasks = new List<Task<bool>>();
         foreach (string ScriptPath in ScriptPaths)
         {
-            LoadTasks.Add(LoadLuaTableAsync(ScriptPath));
+            //LoadTasks.Add(LoadLuaTableAsync(ScriptPath));
+            LoadLuaTable(ScriptPath);
         }
 
-        bool[] Results = await Task.WhenAll(LoadTasks);
-        foreach (bool Result in Results)
-        {
-            if (!Result)
-            {
-                return false;
-            }
-        }
+        //bool[] Results = await Task.WhenAll(LoadTasks);
+        //foreach (bool Result in Results)
+        //{
+        //    if (!Result)
+        //    {
+        //        return false;
+        //    }
+        //}
 
         Debug.Log("[ScriptManager] All Lua scripts loaded successfully.");
         return true;
     }
 
-    private async Task<string> ReadLuaScriptAsync(string ScriptPath)
+    private string ReadLuaScript(string ScriptPath)
     {
         try
         {
-            return await Task.Run(() => File.ReadAllText(ScriptPath));
+            return Resources.Load<TextAsset>(ScriptPath).text;
         }
         catch (FileNotFoundException)
         {
@@ -76,7 +75,7 @@ public class M3_ScriptManager : M3_Manager
         return null;
     }
 
-    private async Task<bool> LoadLuaTableAsync(string ScriptPath)
+    private bool LoadLuaTable(string ScriptPath)
     {
         Hash128 ScriptId = Hash128.Compute(ScriptPath);
         if (_LuaTableCache.ContainsKey(ScriptId))
@@ -85,13 +84,13 @@ public class M3_ScriptManager : M3_Manager
             return false;
         }
 
-        if (!File.Exists(ScriptPath))
-        {
-            Debug.LogWarning($"[ScriptManager] {ScriptPath} no exist!");
-            return false;
-        }
+        //if (!File.Exists(ScriptPath))
+        //{
+        //    Debug.LogWarning($"[ScriptManager] {ScriptPath} no exist!");
+        //    return false;
+        //}
 
-        string LuaCode = await ReadLuaScriptAsync(ScriptPath);
+        string LuaCode = ReadLuaScript(ScriptPath);
         if (string.IsNullOrEmpty(LuaCode))
         {
             return false;

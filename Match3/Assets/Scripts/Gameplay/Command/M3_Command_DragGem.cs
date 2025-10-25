@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public struct M3_DragGemData
@@ -31,47 +32,30 @@ public class M3_Command_DragGem : M3_Command
         _IsAsync = IsAsync;
     }
 
-    public override void Execute()
+    public override IEnumerator Execute()
     {
         _IsExecuting = true;
 
         M3_GridCellContainer ConA = _DraggedContainer;
-        if (ConA == null)
-            return;
-
-        M3_GridCellContainer ConB = _DraggedContainer.ParentGrid.GetContainer(ConA.GridCoords.x, ConA.GridCoords.y, _DragDirection);
+        M3_GridCellContainer ConB = ConA.ParentGrid.GetContainer(ConA.GridCoords.x, ConA.GridCoords.y, _DragDirection);
         if (ConB == null)
         {
-            M3_Gem GemA = ConA.GetGemCell() as M3_Gem;
-            if (GemA != null)
+            M3_Gem Gem = ConA.GetGemCell() as M3_Gem;
+            if (Gem != null)
             {
-                GemA.RecoverOrder();
-                GemA.RecoverScale();
+                yield return Gem.RecoverScale();
             }
 
             M3_GameController.Instance.SetAllowInput(true);
 
-            return;
-        }
-
-        M3_Gem GemB = ConB.GetGemCell() as M3_Gem;
-        if (GemB == null)
-        {
-            M3_Gem GemA = ConA.GetGemCell() as M3_Gem;
-            if (GemA != null)
-            {
-                GemA.RecoverOrder();
-                GemA.RecoverScale();
-            }
-
-            M3_GameController.Instance.SetAllowInput(true);
-
-            return;
+            yield break;
         }
 
         M3_GameController.Instance.SetAllowInput(false);
+        yield return ConA.ParentGrid.SwapGem(ConA.GridCoords.x, ConA.GridCoords.y, ConB.GridCoords.x, ConB.GridCoords.y);
+        M3_GameController.Instance.SetAllowInput(true);
 
-        _DraggedContainer.ParentGrid.SwapGemCell(ConA.GridCoords.x, ConA.GridCoords.y, ConB.GridCoords.x, ConB.GridCoords.y);
+        _IsExecuting = true;
     }
 
     public override string C2String()

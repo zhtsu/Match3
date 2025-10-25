@@ -15,6 +15,6 @@ public class M3_ModAPI
         LevelData.TileSize = 1.2f;
         M3_GameController.Instance.SetCurrentM3Battle(Battle);
 
-        Battle.StartBattle(LevelData);
+        M3_GameController.Instance.RunCoroutine(Battle.StartBattle(LevelData));
     }
 }

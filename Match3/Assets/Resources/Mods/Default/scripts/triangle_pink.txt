@@ -1,0 +1,15 @@
+-- 粉色三角形
+
+local Name = "Triangle Pink Action"
+
+local OnMouseDown = function()
+end
+
+local OnMouseUp = function()
+end
+
+return {
+    Name = Name,
+    OnMouseDown = OnMouseDown,
+    OnMouseUp = OnMouseUp
+}

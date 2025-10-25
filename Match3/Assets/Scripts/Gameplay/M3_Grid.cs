@@ -20,7 +20,6 @@ public class M3_Grid : MonoBehaviour
     public float TileSize { get { return _TileSize; } }
 
     private M3_GridCellContainer[,] _GridArray;
-    private Sequence _SwapSequence;
     private Vector2Int SimulateSwapCoordsA;
     private Vector2Int SimulateSwapCoordsB;
 
@@ -32,27 +31,90 @@ public class M3_Grid : MonoBehaviour
         _GridArray = new M3_GridCellContainer[_Row, _Column];
     }
 
-    public void SwapGemCell(int X1, int Y1, int X2, int Y2, bool RunCheck = true)
+    public IEnumerator SwapGem(int X1, int Y1, int X2, int Y2)
+    {
+        yield return SwapGemAnimCoroutine(X1, Y1, X2, Y2);
+
+        if (IsCanMatch3FromCoords(X2, Y2))
+            yield return ProcessMatch3Coroutine();
+        else
+            yield return RevertGemAnimCoroutine(X1, Y2, X2, Y2);
+    }
+
+    public IEnumerator ProcessMatch3Coroutine()
+    {
+        bool IsChaining = false;
+
+        do
+        {
+            IsChaining = false;
+
+            if (IsCanMatch3(out HashSet<M3_GridCellContainer> CellsToDestroy1))
+            {
+                yield return StartCoroutine(DestroyGemCells(CellsToDestroy1));
+                yield return StartCoroutine(ApplyGravityCoroutine());
+                yield return StartCoroutine(FillEmptyCellsCoroutine());
+            }
+
+            if (IsCanMatch3(out HashSet<M3_GridCellContainer> CellsToDestroy2))
+            {
+                IsChaining = true;
+            }
+        }
+        while (IsChaining);
+    }
+
+    private IEnumerator SwapGemAnimCoroutine(int X1, int Y1, int X2, int Y2)
     {
         M3_GridCellContainer ConA = _GridArray[X1, Y1];
         M3_GridCellContainer ConB = _GridArray[X2, Y2];
 
-        M3_IGridCell GemA = ConA.GetGemCell();
-        M3_IGridCell GemB = ConB.GetGemCell();
+        M3_IGridCell CellA = ConA.GetGemCell();
+        M3_IGridCell CellB = ConB.GetGemCell();
 
         Vector3 PosA = ConA.transform.position;
         Vector3 PosB = ConB.transform.position;
 
-        _SwapSequence.Stop();
-        Tween MoveA = Tween.Position(((MonoBehaviour)GemA).transform, PosB, 0.2f, Ease.InOutCubic);
-        Tween MoveB = Tween.Position(((MonoBehaviour)GemB).transform, PosA, 0.2f, Ease.InOutCubic);
-        _SwapSequence = Sequence.Create()
+        Tween MoveA = Tween.Position(((MonoBehaviour)CellA).transform, PosB, 0.2f, Ease.InOutCubic);
+        Tween MoveB = Tween.Position(((MonoBehaviour)CellB).transform, PosA, 0.2f, Ease.InOutCubic);
+        Sequence Seq = Sequence.Create()
             .Group(MoveA)
-            .Group(MoveB)
-            .ChainCallback(() =>
-            {
-                OnSwapCompleted(ConA, ConB, GemA, GemB, RunCheck);
-            });
+            .Group(MoveB);
+
+        yield return Seq.ToYieldInstruction();
+
+        ConA.AddCell(CellB, M3_FillMode.AspectFit, false);
+        ConB.AddCell(CellA, M3_FillMode.AspectFit, false);
+
+        M3_Gem GemA = CellA as M3_Gem;
+        if (GemA != null)
+        {
+            GemA.RecoverOrder();
+            yield return GemA.RecoverScale();
+        }
+    }
+
+    private IEnumerator RevertGemAnimCoroutine(int X1, int Y1, int X2, int Y2)
+    {
+        M3_GridCellContainer ConA = _GridArray[X1, Y1];
+        M3_GridCellContainer ConB = _GridArray[X2, Y2];
+
+        M3_IGridCell CellA = ConA.GetGemCell();
+        M3_IGridCell CellB = ConB.GetGemCell();
+
+        Vector3 PosA = ConA.transform.position;
+        Vector3 PosB = ConB.transform.position;
+
+        Tween MoveA = Tween.Position(((MonoBehaviour)CellA).transform, PosB, 0.2f, Ease.InOutCubic);
+        Tween MoveB = Tween.Position(((MonoBehaviour)CellB).transform, PosA, 0.2f, Ease.InOutCubic);
+        Sequence Seq = Sequence.Create()
+            .Group(MoveA)
+            .Group(MoveB);
+
+        yield return Seq.ToYieldInstruction();
+
+        ConA.AddCell(CellB, M3_FillMode.AspectFit, false);
+        ConB.AddCell(CellA, M3_FillMode.AspectFit, false);
     }
 
     public void SwapGemByAI()
@@ -144,41 +206,6 @@ public class M3_Grid : MonoBehaviour
         return Result;
     }
 
-    public void OnSwapCompleted(M3_GridCellContainer ConA, M3_GridCellContainer ConB, M3_IGridCell CellA, M3_IGridCell CellB, bool RunCheck)
-    {
-        ConA.AddCell(CellB, M3_FillMode.AspectFit, false);
-        ConB.AddCell(CellA, M3_FillMode.AspectFit, false);
-
-        M3_Gem GemA = CellA as M3_Gem;
-        if (GemA != null)
-        {
-            GemA.RecoverOrder();
-            GemA.RecoverScale();
-        }
-
-        if (RunCheck)
-        {
-            if (IsCanMatch3FromCoords(ConB.GridCoords.x, ConB.GridCoords.y))
-            {
-                RunMatch3();
-                Tween.Delay(1f, () =>
-                {
-                    M3_GameController.Instance.SetAllowInput(true);
-                    M3_EventBus.SendEvent<M3_Event_GemSwapped>();
-                });
-            }
-            else
-                SwapGemCell(ConA.GridCoords.x, ConA.GridCoords.y, ConB.GridCoords.x, ConB.GridCoords.y, false);
-        }
-        else
-        {
-            Tween.Delay(0.1f, () =>
-            {
-                M3_GameController.Instance.SetAllowInput(true);
-            });
-        }
-    }
-
     public void AddCell(M3_IGridCell GridCell, int X, int Y, M3_FillMode FillMode = M3_FillMode.None, bool WithAnim = false)
     {
         if (X < _Row && Y < _Column)
@@ -188,7 +215,7 @@ public class M3_Grid : MonoBehaviour
             {
                 GridContainer.ParentGrid = this;
                 GridContainer.GridCoords = new Vector2Int(X, Y);
-                GridContainer.AddCell(GridCell, FillMode, true, WithAnim);
+                GridContainer.AddCell(GridCell, FillMode, true);
             }
         }
     }
@@ -262,9 +289,12 @@ public class M3_Grid : MonoBehaviour
                 Vector3 Position = new Vector3(i, j) * _TileSize + Offset;
                 GameObject CellContainer = Instantiate(_GridCellContainerPrefab, Position, Quaternion.identity);
                 CellContainer.transform.SetParent(this.transform);
+
                 M3_GridCellContainer GCC = CellContainer.GetComponent<M3_GridCellContainer>();
                 GCC.Initialize(_TileSize, _TileSize);
+                GCC.ParentGrid = this;
                 GCC.GridCoords = new Vector2Int(i, j);
+
                 _GridArray[i, j] = GCC;
             }
         }
@@ -369,41 +399,42 @@ public class M3_Grid : MonoBehaviour
         return CellsToDestroy.Count > 0;
     }
 
-    private void RunMatch3()
+    private IEnumerator DestroyGemCells(HashSet<M3_GridCellContainer> NeedToDestroy)
     {
-        if (IsCanMatch3(out HashSet<M3_GridCellContainer> CellsToDestroy))
+        List<Tween> Tweens1 = new List<Tween>();
+        foreach (M3_GridCellContainer Cont in NeedToDestroy)
         {
-            if (CellsToDestroy.Count > 0)
-                M3_GameController.Instance.SetAllowInput(false);
-            else
-                M3_GameController.Instance.SetAllowInput(true);
+            SpriteRenderer TileSprite = ((M3_Tile)Cont.GetTileCell()).transform.GetComponent<SpriteRenderer>();
 
-            List<Tween> Tweens = new List<Tween>();
-            foreach (M3_GridCellContainer Cont in CellsToDestroy)
-            {
-                SpriteRenderer TileSprite = ((M3_Tile)Cont.GetTileCell()).transform.GetComponent<SpriteRenderer>();
-
-                Tween Tw = Tween.Color(TileSprite, M3_CommonHelper.GetCommonColor(M3_ColorType.White), 0.1f, Ease.InOutCubic);
-                Tweens.Add(Tw);
-            }
-
-            _SwapSequence.Stop();
-            _SwapSequence = Sequence.Create();
-            foreach (Tween Tw in Tweens)
-            {
-                _SwapSequence.Chain(Tw);
-            }
-            _SwapSequence.ChainCallback(() =>
-            {
-                foreach (M3_GridCellContainer Cont in CellsToDestroy)
-                {
-                    Cont.RemoveGemCell();
-                }
-            });
+            Tween Tw = Tween.Color(TileSprite, M3_CommonHelper.GetCommonColor(M3_ColorType.White), 0.1f, Ease.InOutCubic);
+            Tweens1.Add(Tw);
         }
-        else
+
+        Sequence Seq1 = Sequence.Create();
+        foreach (Tween Tw in Tweens1)
+            Seq1.Chain(Tw);
+
+        yield return Seq1.ToYieldInstruction();
+
+        List<Sequence> Seqs = new List<Sequence>();
+        foreach (M3_GridCellContainer Cont in NeedToDestroy)
         {
-            M3_GameController.Instance.SetAllowInput(true);
+            Tween Tw1 = Tween.Scale(((MonoBehaviour)Cont.GetGemCell()).transform, 1.2f, 0.5f, Ease.InQuad);
+            Tween Tw2 = Tween.Scale(((MonoBehaviour)Cont.GetGemCell()).transform, 0.0f, 0.25f, Ease.InQuad);
+
+            Seqs.Add(Tw1.Chain(Tw2));
+        }
+
+        Sequence Seq2 = Sequence.Create();
+        foreach (Sequence Seq in Seqs)
+            Seq2.Group(Seq);
+
+        yield return Seq2.ToYieldInstruction();
+
+        foreach (M3_GridCellContainer Cont in NeedToDestroy)
+        {
+            Cont.ResetTileColor();
+            Cont.RemoveGemCell();
         }
     }
 
@@ -448,11 +479,9 @@ public class M3_Grid : MonoBehaviour
         return Matches;
     }
 
-    public void ApplyGravity()
+    public IEnumerator ApplyGravityCoroutine()
     {
-        M3_GameController.Instance.SetAllowInput(false);
-
-        List<Sequence> Sequences = new List<Sequence>();
+        List<Tween> Tweens = new List<Tween>();
         for (int i = 0; i < _Column; i++)
         {
             int EmptyCount = 0;
@@ -472,25 +501,27 @@ public class M3_Grid : MonoBehaviour
                     Vector3 TargetPos = _GridArray[TargetI, TargetJ].transform.position;
 
                     Tween Tw = Tween.Position(((MonoBehaviour)GemCell).transform, TargetPos, 0.2f, Ease.InOutCubic);
-                    Sequence.Create()
-                        .Chain(Tw)
-                        .ChainCallback(() =>
-                        {
-                            _GridArray[TargetI, TargetJ].AddCell(GemCell, M3_FillMode.AspectFit, false);
-                        });
+                    Tw.OnComplete(() =>
+                    {
+                        _GridArray[TargetI, TargetJ].AddCell(GemCell, M3_FillMode.AspectFit, false);
+                    });
+
+                    Tweens.Add(Tw);
                 }
             }
         }
 
-        Tween.Delay(0.2f, () =>
-        {
-            FillEmptyCells();
-            RunMatch3();
-        });
+        Sequence Seq = Sequence.Create();
+        foreach (Tween Tw in Tweens)
+            Seq.Group(Tw);
+
+        if (Tweens.Count > 0)
+            yield return Seq.ToYieldInstruction();
     }
 
-    public void FillEmptyCells()
+    public IEnumerator FillEmptyCellsCoroutine(float AnimDuration = 0.2f)
     {
+        List<Tween> Tweens = new List<Tween>();
         for (int i = 0; i < _Row; i++)
         {
             for (int j = 0; j < _Column; j++)
@@ -499,9 +530,25 @@ public class M3_Grid : MonoBehaviour
                 {
                     M3_UnitData GemData = M3_CommonHelper.GetRandomGemData();
                     M3_IGridCell NewCell = M3_CommonHelper.SpawnGem(GemData.BelongingModId, GemData.Id);
-                    _GridArray[i, j].AddCell(NewCell, M3_FillMode.AspectFit, false, true, 0.3f);
+                    _GridArray[i, j].AddCell(NewCell, M3_FillMode.AspectFit, false);
+
+                    const float FallOffset = 100f;
+                    Vector3 StartPosition = new Vector3(0f, FallOffset, 0f);
+
+                    Transform CellTransform = ((MonoBehaviour)NewCell).transform;
+                    CellTransform.localPosition = StartPosition;
+
+                    Tween Tw = Tween.LocalPosition(CellTransform, Vector3.zero, AnimDuration, Ease.OutQuad);
+                    Tweens.Add(Tw);
                 }
             }
         }
+
+        Sequence Seq = Sequence.Create();
+        foreach (Tween Tw in Tweens)
+            Seq.Group(Tw);
+
+        if (Tweens.Count > 0)
+            yield return Seq.ToYieldInstruction();
     }
 }

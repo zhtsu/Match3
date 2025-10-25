@@ -1,0 +1,16 @@
+{
+    "Id": "rect_yellow",
+    "Name": "rect_yellow_gem_name",
+    "Description": "rect_yellow_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/rect_yellow.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/rect_yellow.lua"
+}

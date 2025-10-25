@@ -30,29 +30,32 @@ public class M3_CommandManager : M3_Manager
         CommandQueue.Enqueue(Command);
     }
 
+    private void ExecuteLatestExecutedCommand()
+    {
+        LatestExecutedCommand = CommandQueue.Dequeue();
+        M3_GameController.Instance.RunCoroutine(LatestExecutedCommand.Execute());
+    }
+
     public void Update()
     {
-        if (CommandQueue.Count > 0)
+        if (CommandQueue.Count == 0)
+            return;
+
+        if (LatestExecutedCommand == null)
         {
-            if (LatestExecutedCommand == null)
+            ExecuteLatestExecutedCommand();
+        }
+        else
+        {
+            if (LatestExecutedCommand.IsAsync)
             {
-                LatestExecutedCommand = CommandQueue.Dequeue();
-                LatestExecutedCommand.Execute();
+                ExecuteLatestExecutedCommand();
             }
             else
             {
-                if (LatestExecutedCommand.IsAsync)
+                if (!LatestExecutedCommand.IsExecuting)
                 {
-                    LatestExecutedCommand = CommandQueue.Dequeue();
-                    LatestExecutedCommand.Execute();
-                }
-                else
-                {
-                    if (!LatestExecutedCommand.IsExecuting)
-                    {
-                        LatestExecutedCommand = CommandQueue.Dequeue();
-                        LatestExecutedCommand.Execute();
-                    }
+                    ExecuteLatestExecutedCommand();
                 }
             }
         }

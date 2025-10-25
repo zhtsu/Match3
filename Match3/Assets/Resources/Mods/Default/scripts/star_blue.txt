@@ -1,0 +1,15 @@
+-- 蓝色星星
+
+local Name = "Star Blue Action"
+
+local OnMouseDown = function()
+end
+
+local OnMouseUp = function()
+end
+
+return {
+    Name = Name,
+    OnMouseDown = OnMouseDown,
+    OnMouseUp = OnMouseUp
+}

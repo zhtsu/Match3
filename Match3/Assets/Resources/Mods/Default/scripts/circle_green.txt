@@ -1,0 +1,15 @@
+-- 绿色圆形
+
+local Name = "Circle Green Action"
+
+local OnMouseDown = function()
+end
+
+local OnMouseUp = function()
+end
+
+return {
+    Name = Name,
+    OnMouseDown = OnMouseDown,
+    OnMouseUp = OnMouseUp
+}

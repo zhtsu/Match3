@@ -1,0 +1,16 @@
+{
+    "Id": "pentagon_green",
+    "Name": "pentagon_green_gem_name",
+    "Description": "pentagon_green_gem_description",
+    "AnimationTable": {
+        "Idle": {
+            "Type": "Sprite",
+            "Keyframes": [
+                "Default/textures/pentagon_green.png"
+            ]
+        }
+
+        
+    },
+    "ScriptPath": "Default/scripts/pentagon_green.lua"
+}

@@ -1,0 +1,44 @@
+{
+    "Id": "default",
+    "Name": "default_mod_name",
+    "Description": "default_mod_description",
+    "Author": "zhtsu",
+    "Email": "zhtsu@qq.com",
+    "TileList": [
+    ],
+    "UnitList": [
+        "Default/gems/circle_blue.json",
+        "Default/gems/circle_yellow.json",
+        "Default/gems/circle_red.json",
+        "Default/gems/circle_green.json",
+        "Default/gems/circle_pink.json",
+
+        "Default/gems/rect_blue.json",
+        "Default/gems/rect_yellow.json",
+        "Default/gems/rect_red.json",
+        "Default/gems/rect_green.json",
+        "Default/gems/rect_pink.json",
+
+        "Default/gems/pentagon_blue.json",
+        "Default/gems/pentagon_yellow.json",
+        "Default/gems/pentagon_red.json",
+        "Default/gems/pentagon_green.json",
+        "Default/gems/pentagon_pink.json",
+
+        "Default/gems/star_blue.json",
+        "Default/gems/star_yellow.json",
+        "Default/gems/star_red.json",
+        "Default/gems/star_green.json",
+        "Default/gems/star_pink.json",
+
+        "Default/gems/triangle_blue.json",
+        "Default/gems/triangle_yellow.json",
+        "Default/gems/triangle_red.json",
+        "Default/gems/triangle_green.json",
+        "Default/gems/triangle_pink.json"
+    ],
+    "LocaleList": [
+        "Default/locale.json"
+    ],
+    "MainInkFile" : "Default/stories/main.ink"
+}

@@ -52,3 +52,7 @@ public class M3_Event_BattleControllerChanged : M3_Event
 public class M3_Event_GemSwapped : M3_Event
 {
 }
+
+public class M3_Event_TurnEnded : M3_Event
+{
+}

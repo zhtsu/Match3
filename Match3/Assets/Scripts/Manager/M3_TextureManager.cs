@@ -26,34 +26,33 @@ public class M3_TextureManager : M3_Manager
 
     private void OnTexturesReadCompleted(M3_Event_TexturesReadCompleted Event)
     {
-        LoadTexturesAsync(Event.TextureList).ContinueWith((Task<bool> LoadTask) =>
-        {
-            M3_EventBus.SendEvent<M3_Event_TexturesLoadCompleted>();
-        });
+        LoadTextures(Event.TextureList);
+        M3_EventBus.SendEvent<M3_Event_TexturesLoadCompleted>();
     }
 
-    private async Task<bool> LoadTexturesAsync(List<string> TexturePaths)
+    private bool LoadTextures(List<string> TexturePaths)
     {
         List<Task<bool>> LoadTasks = new List<Task<bool>>();
         foreach (string ScriptPath in TexturePaths)
         {
-            LoadTasks.Add(LoadTextureAsync(ScriptPath));
+            //LoadTasks.Add(LoadTextureAsync(ScriptPath));
+            LoadTexture(ScriptPath);
         }
 
-        bool[] Results = await Task.WhenAll(LoadTasks);
-        foreach (bool Result in Results)
-        {
-            if (!Result)
-            {
-                return false;
-            }
-        }
+        //bool[] Results = await Task.WhenAll(LoadTasks);
+        //foreach (bool Result in Results)
+        //{
+        //    if (!Result)
+        //    {
+        //        return false;
+        //    }
+        //}
 
         Debug.Log("[TextureManager] All textures loaded successfully.");
         return true;
     }
 
-    private async Task<bool> LoadTextureAsync(string TexturePath)
+    private bool LoadTexture(string TexturePath)
     {
         Hash128 TextureId = Hash128.Compute(TexturePath);
         if (_TextureDict.ContainsKey(TextureId))
@@ -62,26 +61,24 @@ public class M3_TextureManager : M3_Manager
             return true;
         }
 
-        if (!File.Exists(TexturePath))
-        {
-            Debug.LogWarning($"[TextureManager] {TexturePath} no exist!");
-            return false;
-        }
+        //if (!File.Exists(TexturePath))
+        //{
+        //    Debug.LogWarning($"[TextureManager] {TexturePath} no exist!");
+        //    return false;
+        //}
 
-        byte[] TextureData = null;
+        Texture2D NewTexture = null;
 
         try
         {
-            TextureData = await Task.Run(() => File.ReadAllBytes(TexturePath));
+            NewTexture = Resources.Load<Texture2D>(TexturePath);
         }
         catch (System.Exception Err)
         {
             Debug.LogError($"Fail to read {TexturePath}\n Error: {Err.Message}");
         }
 
-        Texture2D NewTexture = new Texture2D(2, 2);
-
-        if (NewTexture.LoadImage(TextureData))
+        if (NewTexture != null)
         {
             _TextureDict[TextureId] = NewTexture;
             return true;

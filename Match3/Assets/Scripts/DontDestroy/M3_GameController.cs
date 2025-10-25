@@ -89,6 +89,11 @@ public class M3_GameController : MonoBehaviour
                _GlobalData.IsManagerHubReady;
     }
 
+    public void RunCoroutine(IEnumerator Coroutine)
+    {
+        StartCoroutine(Coroutine);
+    }
+
     private void Update()
     {
         if (!_GlobalData.IsGameReady)
