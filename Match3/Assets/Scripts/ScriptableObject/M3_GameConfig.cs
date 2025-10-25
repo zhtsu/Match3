@@ -14,4 +14,15 @@ public class M3_GameConfig : ScriptableObject
     [SerializeField]
     private float _MouseDragThreshold = 5f;
     public float MouseDragThreshold { get { return _MouseDragThreshold; } }
+
+    [SerializeField]
+    AudioClip _MouseHoverClip;
+    [SerializeField]
+    AudioClip _MousePressClip;
+    [SerializeField]
+    AudioClip _GemSwappedClip;
+    [SerializeField]
+    AudioClip _GemDestroyClip;
+    [SerializeField]
+    AudioClip[] _MusicClipList;
 };

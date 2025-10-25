@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public enum M3_GameState
 {
@@ -15,6 +16,14 @@ public class M3_GameController : MonoBehaviour
 {
     [SerializeField]
     private M3_GameConfig _GameConfig;
+    [SerializeField]
+    private M3_UserConfig _UserConfig;
+    [SerializeField]
+    private AudioSource _MusicAudioSource;
+    [SerializeField]
+    private AudioSource _FXAudioSource;
+    [SerializeField]
+    private AudioMixer _MainMixer;
 
     private static M3_GameController _Instance;
     private M3_GlobalData _GlobalData;
@@ -190,5 +199,36 @@ public class M3_GameController : MonoBehaviour
     public void SetBattleInputController(M3_ControllerType ControllerType)
     {
         _GlobalData.CurrentBattleInputController = ControllerType;
+    }
+
+    public float GetFXVolume() { return _UserConfig.FXVolume; }
+    public float GetMusicVolume() { return _UserConfig.MusicVolume; }
+
+    public void SetFXVolume(float Volume)
+    {
+        _UserConfig.FXVolume = Volume;
+    }
+
+    public void SetMusicVolume(float Volume)
+    {
+        _UserConfig.MusicVolume = Volume;
+    }
+
+    public void PlayMusic(AudioClip MusicClip)
+    {
+        if (_MusicAudioSource != null)
+        {
+            _MusicAudioSource.clip = MusicClip;
+            _MusicAudioSource.Play();
+        }
+    }
+
+    public void PlayFX(AudioClip FXClip)
+    {
+        if (_FXAudioSource != null)
+        {
+            _FXAudioSource.clip = FXClip;
+            _FXAudioSource.Play();
+        }
     }
 }

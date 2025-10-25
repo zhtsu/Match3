@@ -36,7 +36,10 @@ public class M3_Grid : MonoBehaviour
         yield return SwapGemAnimCoroutine(X1, Y1, X2, Y2);
 
         if (IsCanMatch3FromCoords(X2, Y2))
+        {
             yield return ProcessMatch3Coroutine();
+            M3_EventBus.SendEvent<M3_Event_TurnEnded>();
+        }
         else
             yield return RevertGemAnimCoroutine(X1, Y2, X2, Y2);
     }

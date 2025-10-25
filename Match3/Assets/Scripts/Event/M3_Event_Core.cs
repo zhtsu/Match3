@@ -9,6 +9,7 @@ public class M3_Event_ScriptsLoadCompleted : M3_Event { }
 public class M3_Event_ManagerHubReady : M3_Event { }
 public class M3_Event_GameReady : M3_Event { }
 public class M3_Event_LoadingCompleted : M3_Event { }
+public class M3_Event_TurnEnded : M3_Event { }
 
 public class M3_Event_ScriptsReadCompleted : M3_Event
 {
@@ -47,12 +48,4 @@ public class M3_Event_BattleControllerChanged : M3_Event
     {
         NewControllerType = InNewControllerType;
     }
-}
-
-public class M3_Event_GemSwapped : M3_Event
-{
-}
-
-public class M3_Event_TurnEnded : M3_Event
-{
 }
