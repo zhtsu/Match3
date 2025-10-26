@@ -25,7 +25,7 @@ public class M3_Gem : M3_Unit, M3_IGridCell
 
     }
 
-    private void SetOrderToTop()
+    public void SetOrderToTop()
     {
         transform.GetComponent<Renderer>().sortingOrder = 100;
     }
@@ -39,8 +39,9 @@ public class M3_Gem : M3_Unit, M3_IGridCell
     {
         if (M3_GameController.Instance.IsAllowInput == false)
             return;
-
         if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.AI)
+            return;
+        if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.None)
             return;
 
         M3_GameController.Instance.SetCurrentClickedGem(this);
@@ -58,8 +59,9 @@ public class M3_Gem : M3_Unit, M3_IGridCell
     {
         if (M3_GameController.Instance.IsAllowInput == false)
             return;
-
         if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.AI)
+            return;
+        if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.None)
             return;
 
         M3_GameController.Instance.SetAllowInput(false);
@@ -72,7 +74,7 @@ public class M3_Gem : M3_Unit, M3_IGridCell
             if (M3_GameController.Instance.CurrentClickedGem == this)
             {
                 RecoverOrder();
-                RecoverScale();
+                StartCoroutine(RecoverScale());
                 M3_GameController.Instance.SetAllowInput(true);
             }
         }

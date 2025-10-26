@@ -13,6 +13,7 @@ public enum M3_UIType
     Mod,
     StoryView,
     ModSelect,
+    Match3Battle,
 }
 
 public abstract class M3_UIParams

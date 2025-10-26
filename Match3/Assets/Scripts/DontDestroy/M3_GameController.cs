@@ -54,7 +54,7 @@ public class M3_GameController : MonoBehaviour
 
         _GlobalData.CurrentM3Battle = null;
         _GlobalData.CurrentGameState = M3_GameState.Loading;
-        _GlobalData.CurrentBattleInputController = M3_ControllerType.Player;
+        _GlobalData.CurrentBattleInputController = M3_ControllerType.None;
 
         _Instance = this;
     }

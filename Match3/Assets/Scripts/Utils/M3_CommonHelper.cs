@@ -15,6 +15,7 @@ public enum M3_ColorType
     HyperLink,
     TileWhite,
     TileBlack,
+    Red,
 }
 
 public class M3_CommonHelper
@@ -51,6 +52,11 @@ public class M3_CommonHelper
             case M3_ColorType.TileBlack:
                 {
                     ColorUtility.TryParseHtmlString("#332C2C", out Color Col);
+                    return Col;
+                }
+            case M3_ColorType.Red:
+                {
+                    ColorUtility.TryParseHtmlString("#8B0000", out Color Col);
                     return Col;
                 }
         }
@@ -181,6 +187,8 @@ public class M3_CommonHelper
                 return "StoryView";
             case M3_UIType.ModSelect:
                 return "ModSelect";
+            case M3_UIType.Match3Battle:
+                return "Match3Battle";
         }
 
         return null;

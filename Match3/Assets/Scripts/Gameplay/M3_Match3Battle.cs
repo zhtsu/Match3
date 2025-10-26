@@ -9,7 +9,7 @@ public class M3_Match3Battle
 
     public IEnumerator StartBattle(M3_LevelData LevelData)
     {
-        M3_EventBus.Subscribe<M3_Event_TurnEnded>(OnTurnEnded);
+        M3_EventBus.Subscribe<M3_Event_HPUIUpdated>(OnTurnEnded);
 
         GameObject GridPrefab = M3_CommonHelper.GetPrefab("Grid");
         if (GridPrefab != null)
@@ -23,6 +23,12 @@ public class M3_Match3Battle
 
         yield return _Grid.FillEmptyCellsCoroutine(0.6f);
         yield return _Grid.ProcessMatch3Coroutine();
+
+        if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.None)
+        {
+            M3_GameController.Instance.SetBattleInputController(M3_ControllerType.Player);
+            M3_EventBus.SendEvent(new M3_Event_BattleControllerChanged(M3_ControllerType.Player));
+        }
 
         _AIController = new M3_AIController(_Grid);
     }
@@ -41,7 +47,7 @@ public class M3_Match3Battle
         }
     }
 
-    private void OnTurnEnded(M3_Event_TurnEnded Event)
+    private void OnTurnEnded(M3_Event_HPUIUpdated Event)
     {
         SwitchController();
     }

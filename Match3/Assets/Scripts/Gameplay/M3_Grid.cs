@@ -2,8 +2,6 @@ using PrimeTween;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
-using static UnityEngine.GraphicsBuffer;
 
 public class M3_Grid : MonoBehaviour
 {
@@ -20,8 +18,8 @@ public class M3_Grid : MonoBehaviour
     public float TileSize { get { return _TileSize; } }
 
     private M3_GridCellContainer[,] _GridArray;
-    private Vector2Int SimulateSwapCoordsA;
-    private Vector2Int SimulateSwapCoordsB;
+
+    private int Damage = 0;
 
     public void Initialize(int Row, int Column, float TileSize)
     {
@@ -37,11 +35,18 @@ public class M3_Grid : MonoBehaviour
 
         if (IsCanMatch3FromCoords(X2, Y2))
         {
+            Damage = 0;
+
             yield return ProcessMatch3Coroutine();
-            M3_EventBus.SendEvent<M3_Event_TurnEnded>();
+
+            M3_Event_Match3Damage Event = new M3_Event_Match3Damage(
+                M3_GameController.Instance.CurrentBattleInputController,
+                Damage
+            );
+            M3_EventBus.SendEvent<M3_Event_Match3Damage>(Event);
         }
         else
-            yield return RevertGemAnimCoroutine(X1, Y2, X2, Y2);
+            yield return RevertGemAnimCoroutine(X1, Y1, X2, Y2);
     }
 
     public IEnumerator ProcessMatch3Coroutine()
@@ -54,6 +59,13 @@ public class M3_Grid : MonoBehaviour
 
             if (IsCanMatch3(out HashSet<M3_GridCellContainer> CellsToDestroy1))
             {
+                int TotalDamage = 3;
+                int DamageDelta = CellsToDestroy1.Count - 3;
+                for (int i = 0; i < DamageDelta; i++)
+                    TotalDamage += (i + 1) * 2;
+
+                Damage += TotalDamage;
+
                 yield return StartCoroutine(DestroyGemCells(CellsToDestroy1));
                 yield return StartCoroutine(ApplyGravityCoroutine());
                 yield return StartCoroutine(FillEmptyCellsCoroutine());
@@ -407,9 +419,17 @@ public class M3_Grid : MonoBehaviour
         List<Tween> Tweens1 = new List<Tween>();
         foreach (M3_GridCellContainer Cont in NeedToDestroy)
         {
-            SpriteRenderer TileSprite = ((M3_Tile)Cont.GetTileCell()).transform.GetComponent<SpriteRenderer>();
+            if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.None)
+                continue;
 
-            Tween Tw = Tween.Color(TileSprite, M3_CommonHelper.GetCommonColor(M3_ColorType.White), 0.1f, Ease.InOutCubic);
+            SpriteRenderer TileSprite = ((M3_Tile)Cont.GetTileCell()).transform.GetComponent<SpriteRenderer>();
+            ((M3_Gem)Cont.GetGemCell()).SetOrderToTop();
+
+            Color Col = M3_CommonHelper.GetCommonColor(M3_ColorType.White);
+            if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.AI)
+                Col = M3_CommonHelper.GetCommonColor(M3_ColorType.Red);
+
+            Tween Tw = Tween.Color(TileSprite, Col, 0.1f, Ease.InOutCubic);
             Tweens1.Add(Tw);
         }
 
@@ -422,15 +442,41 @@ public class M3_Grid : MonoBehaviour
         List<Sequence> Seqs = new List<Sequence>();
         foreach (M3_GridCellContainer Cont in NeedToDestroy)
         {
-            Tween Tw1 = Tween.Scale(((MonoBehaviour)Cont.GetGemCell()).transform, 1.2f, 0.5f, Ease.InQuad);
-            Tween Tw2 = Tween.Scale(((MonoBehaviour)Cont.GetGemCell()).transform, 0.0f, 0.25f, Ease.InQuad);
+            if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.None)
+            {
+                Tween Tw1 = Tween.Scale(((MonoBehaviour)Cont.GetGemCell()).transform, 1.2f, 0.5f, Ease.InQuad);
+                Tween Tw2 = Tween.Scale(((MonoBehaviour)Cont.GetGemCell()).transform, 0.0f, 0.25f, Ease.InQuad);
 
-            Seqs.Add(Tw1.Chain(Tw2));
+                Seqs.Add(Tw1.Chain(Tw2));
+            }
+            else
+            {
+                Vector3 TargetPos = Vector3.zero;
+                if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.AI)
+                    TargetPos = new Vector3(-8.5f, -3f, 0);
+                else
+                    TargetPos = new Vector3(8.5f, -3f, 0);
+
+                Tween Tw1 = Tween.Scale(((MonoBehaviour)Cont.GetGemCell()).transform, 2f, 0.25f, Ease.OutQuad);
+                Tween Tw2 = Tween.Position(((MonoBehaviour)Cont.GetGemCell()).transform, TargetPos, 0.1f, Ease.InQuad);
+                Tween Tw3 = Tween.Scale(((MonoBehaviour)Cont.GetGemCell()).transform, 1f, 0.1f, Ease.InQuad);
+
+                Seqs.Add(Tw1.Chain(Tw2).Group(Tw3));
+            }
         }
 
         Sequence Seq2 = Sequence.Create();
-        foreach (Sequence Seq in Seqs)
-            Seq2.Group(Seq);
+
+        if (M3_GameController.Instance.CurrentBattleInputController == M3_ControllerType.None)
+        {
+            foreach (Sequence Seq in Seqs)
+                Seq2.Group(Seq);
+        }
+        else
+        {
+            foreach (Sequence Seq in Seqs)
+                Seq2.Chain(Seq);
+        }
 
         yield return Seq2.ToYieldInstruction();
 

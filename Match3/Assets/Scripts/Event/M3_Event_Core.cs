@@ -9,7 +9,7 @@ public class M3_Event_ScriptsLoadCompleted : M3_Event { }
 public class M3_Event_ManagerHubReady : M3_Event { }
 public class M3_Event_GameReady : M3_Event { }
 public class M3_Event_LoadingCompleted : M3_Event { }
-public class M3_Event_TurnEnded : M3_Event { }
+public class M3_Event_HPUIUpdated : M3_Event { }
 
 public class M3_Event_ScriptsReadCompleted : M3_Event
 {
@@ -47,5 +47,17 @@ public class M3_Event_BattleControllerChanged : M3_Event
     public M3_Event_BattleControllerChanged(M3_ControllerType InNewControllerType)
     {
         NewControllerType = InNewControllerType;
+    }
+}
+
+public class M3_Event_Match3Damage : M3_Event
+{
+    public M3_ControllerType ControllerType;
+    public int DamageValue;
+
+    public M3_Event_Match3Damage(M3_ControllerType InControllerType, int InDamageValue)
+    {
+        ControllerType = InControllerType;
+        DamageValue = InDamageValue;
     }
 }
